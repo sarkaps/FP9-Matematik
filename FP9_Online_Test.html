@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FP9 Matematik – Online Test</title>
+<style>
+:root{
+  --blue:#1a4a8a;--blue-light:#2563b8;--blue-dark:#0f2d56;
+  --green:#1a7a3a;--green-bg:#e8f5ec;
+  --red:#c0392b;--red-bg:#fdecea;
+  --yellow:#f39c12;--gray:#6b7280;--gray-light:#f3f4f6;
+  --border:#dde1e7;--radius:10px;--shadow:0 2px 8px rgba(0,0,0,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0f4f9;color:#1e293b;min-height:100vh}
+h1,h2,h3{line-height:1.2}
+.page{display:none}.page.active{display:block}
+
+/* Header */
+.app-header{background:var(--blue-dark);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.app-header .logo{font-size:1.3rem;font-weight:700;letter-spacing:-.5px}
+.app-header .subtitle{font-size:.85rem;opacity:.7}
+.app-header .spacer{flex:1}
+.nav-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;transition:background .2s}
+.nav-btn:hover{background:rgba(255,255,255,.25)}
+
+/* Home */
+.home-hero{background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue) 100%);color:#fff;padding:48px 24px 40px;text-align:center}
+.home-hero h1{font-size:2rem;margin-bottom:10px}
+.home-hero p{font-size:1.05rem;opacity:.85;max-width:560px;margin:0 auto}
+.home-content{max-width:980px;margin:0 auto;padding:32px 24px}
+.section-title{font-size:1.1rem;font-weight:700;color:var(--blue-dark);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-bottom:36px}
+.test-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s}
+.test-card:hover{border-color:var(--blue-light);transform:translateY(-2px);box-shadow:var(--shadow)}
+.test-card .test-num{font-size:2rem;font-weight:800;color:var(--blue);line-height:1;margin-bottom:4px}
+.test-card .test-label{font-size:.82rem;color:var(--gray);margin-bottom:10px}
+.test-card .test-badge{font-size:.72rem;background:var(--gray-light);color:var(--gray);border-radius:20px;padding:2px 10px;display:inline-block;margin-bottom:12px}
+.test-card .start-btn{background:var(--blue);color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:.88rem;font-weight:600;cursor:pointer;width:100%;transition:background .2s}
+.test-card .start-btn:hover{background:var(--blue-light)}
+.test-card .best-score{font-size:.73rem;color:var(--green);font-weight:600;margin-top:8px}
+.info-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:22px;border-left:4px solid var(--blue)}
+.info-box h3{font-size:.92rem;color:var(--blue-dark);margin-bottom:8px}
+.info-box p,.info-box li{font-size:.88rem;color:#4b5563;line-height:1.6}
+.info-box ul{padding-left:18px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.scale-table{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:.86rem}
+.scale-table table{width:100%;border-collapse:collapse}
+.scale-table th{background:var(--blue-dark);color:#fff;padding:8px 14px;text-align:left;font-size:.8rem}
+.scale-table td{padding:7px 14px;border-bottom:1px solid var(--gray-light)}
+.scale-table tr:last-child td{border-bottom:none}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:30px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h2{font-size:1.35rem;color:var(--blue-dark);margin-bottom:6px}
+.modal .modal-sub{color:var(--gray);font-size:.88rem;margin-bottom:22px}
+.modal label{display:block;font-size:.88rem;font-weight:600;margin-bottom:5px}
+.modal input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;font-size:.98rem;margin-bottom:18px;outline:none;transition:border-color .2s}
+.modal input:focus{border-color:var(--blue)}
+.modal-info{background:var(--gray-light);border-radius:7px;padding:11px 15px;margin-bottom:18px;font-size:.85rem;color:#374151;line-height:1.5}
+.modal-btns{display:flex;gap:10px}
+.btn-primary{background:var(--blue);color:#fff;border:none;border-radius:7px;padding:11px 22px;font-size:.93rem;font-weight:700;cursor:pointer;flex:1;transition:background .2s}
+.btn-primary:hover{background:var(--blue-light)}
+.btn-secondary{background:#fff;color:var(--gray);border:1.5px solid var(--border);border-radius:7px;padding:11px 22px;font-size:.93rem;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{border-color:var(--gray);color:#1e293b}
+
+/* Test topbar */
+.test-topbar{background:#fff;border-bottom:1px solid var(--border);padding:11px 22px;display:flex;align-items:center;gap:14px;position:sticky;top:57px;z-index:90;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.test-info-header{font-size:.88rem;color:var(--gray);white-space:nowrap}
+.test-info-header strong{color:var(--blue-dark)}
+.test-progress-bar{flex:1;height:6px;background:var(--gray-light);border-radius:3px;overflow:hidden}
+.test-progress-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .3s}
+.timer-box{display:flex;align-items:center;gap:7px;background:var(--blue-dark);color:#fff;padding:7px 13px;border-radius:8px;font-size:.93rem;font-weight:700;min-width:86px;justify-content:center}
+.timer-box.warn{background:var(--yellow);color:#7c4a00}
+.timer-box.danger{background:var(--red);color:#fff;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* Test body */
+.test-body{max-width:800px;margin:0 auto;padding:22px 18px}
+.section-banner{padding:9px 16px;border-radius:7px;font-size:.88rem;font-weight:700;margin-bottom:18px;letter-spacing:.4px}
+.section-banner.alg{background:var(--blue-dark);color:#fff}
+.section-banner.geo{background:#065f46;color:#fff}
+.section-banner.stat{background:#4c1d95;color:#fff}
+
+.opgave-block{background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:18px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.opgave-header{background:#f8f9ff;border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:flex-start;gap:10px}
+.opgave-num{font-size:.78rem;font-weight:700;background:var(--blue);color:#fff;padding:2px 8px;border-radius:4px;white-space:nowrap;margin-top:2px}
+.opgave-num.geo{background:#065f46}
+.opgave-num.stat{background:#4c1d95}
+.opgave-context{font-size:.88rem;color:#374151;line-height:1.5;font-style:italic}
+.opgave-questions{padding:14px 16px}
+
+.question-row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--gray-light)}
+.question-row:last-child{border-bottom:none;padding-bottom:0}
+.q-label{font-size:.78rem;font-weight:700;color:var(--blue-light);min-width:34px;padding-top:3px}
+.q-content{flex:1}
+.q-text{font-size:.91rem;color:#1e293b;line-height:1.5;margin-bottom:9px}
+.mc-options{display:flex;flex-direction:column;gap:5px;margin-bottom:9px}
+.mc-option{display:flex;align-items:center;gap:8px;padding:6px 11px;border:1.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:.86rem;transition:all .15s}
+.mc-option:hover{border-color:var(--blue-light);background:#f0f4ff}
+.mc-option input[type=radio]{accent-color:var(--blue);width:14px;height:14px}
+.mc-option.selected{border-color:var(--blue);background:#e8f0fe}
+.text-answer{width:100%;border:1.5px solid var(--border);border-radius:6px;padding:8px 11px;font-size:.9rem;outline:none;transition:border-color .2s;background:#fafbff}
+.text-answer:focus{border-color:var(--blue);background:#fff}
+.text-answer.answered{border-color:#93c5fd;background:#eff6ff}
+
+.test-footer{max-width:800px;margin:0 auto;padding:0 18px 40px}
+.submit-section{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:22px;text-align:center}
+.submit-section .progress-text{font-size:.88rem;color:var(--gray);margin-bottom:13px}
+.btn-submit{background:var(--green);color:#fff;border:none;border-radius:8px;padding:12px 38px;font-size:1rem;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-submit:hover{background:#15663a}
+
+/* Results */
+.results-body{max-width:800px;margin:0 auto;padding:26px 18px}
+.results-hero{background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue) 100%);color:#fff;border-radius:12px;padding:26px 30px;margin-bottom:22px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+.results-hero .hero-left h2{font-size:1.1rem;opacity:.8;font-weight:400;margin-bottom:4px}
+.results-hero .student-name{font-size:1.45rem;font-weight:700}
+.results-hero .test-name{font-size:.88rem;opacity:.75;margin-top:4px}
+.grade-circle{width:108px;height:108px;border-radius:50%;background:rgba(255,255,255,.15);border:4px solid rgba(255,255,255,.4);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.grade-circle .grade-val{font-size:2.5rem;font-weight:900;line-height:1}
+.grade-circle .grade-label{font-size:.7rem;opacity:.8;margin-top:2px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:22px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.stat-card .val{font-size:1.85rem;font-weight:800;color:var(--blue-dark);line-height:1;margin-bottom:4px}
+.stat-card .lbl{font-size:.78rem;color:var(--gray)}
+.stat-card.correct .val{color:var(--green)}
+.stat-card.wrong .val{color:var(--red)}
+.results-actions{display:flex;gap:10px;margin-bottom:26px;flex-wrap:wrap}
+.btn-action{padding:9px 20px;border-radius:7px;font-size:.9rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--blue-dark);transition:all .2s}
+.btn-action:hover{background:var(--gray-light)}
+.btn-action.primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-action.primary:hover{background:var(--blue-light)}
+
+/* Review */
+.review-section h3{font-size:.98rem;font-weight:700;color:var(--blue-dark);margin-bottom:13px}
+.review-section-header{padding:7px 13px;font-size:.82rem;font-weight:700;color:#fff;margin:14px 0 0;border-radius:6px}
+.review-section-header.alg{background:var(--blue-dark)}
+.review-section-header.geo{background:#065f46}
+.review-section-header.stat{background:#4c1d95}
+.review-opgave{margin-bottom:12px}
+.review-opgave-header{font-size:.8rem;font-weight:700;color:#fff;background:var(--blue-dark);padding:6px 11px;border-radius:6px 6px 0 0}
+.review-opgave-header.geo{background:#065f46}
+.review-opgave-header.stat{background:#4c1d95}
+.review-q{display:grid;grid-template-columns:34px 1fr auto;gap:9px;align-items:start;padding:10px 13px;border:1px solid var(--border);border-top:none;background:#fff}
+.review-q:last-child{border-radius:0 0 6px 6px}
+.review-q-num{font-size:.78rem;font-weight:700;color:var(--blue-light);padding-top:2px}
+.review-q-body .q-text-small{font-size:.86rem;color:#374151;margin-bottom:4px}
+.review-q-body .answers-row{display:flex;gap:8px;flex-wrap:wrap;font-size:.8rem}
+.answers-row .student-ans{color:#374151}
+.answers-row .correct-ans{color:var(--green);font-weight:600}
+.answers-row .separator{color:var(--gray)}
+.review-icon{font-size:1.15rem;padding-top:2px}
+.review-q.correct{border-left:3px solid var(--green)}
+.review-q.wrong{border-left:3px solid var(--red);background:#fff9f8}
+
+/* History */
+.history-body{max-width:960px;margin:0 auto;padding:26px 18px}
+.history-empty{text-align:center;padding:60px 20px;color:var(--gray)}
+.history-table{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.history-table table{width:100%;border-collapse:collapse;font-size:.88rem}
+.history-table th{background:var(--gray-light);padding:9px 13px;text-align:left;font-size:.78rem;font-weight:700;color:var(--gray);border-bottom:1px solid var(--border)}
+.history-table td{padding:10px 13px;border-bottom:1px solid var(--gray-light);vertical-align:middle}
+.history-table tr:last-child td{border-bottom:none}
+.grade-badge{display:inline-block;background:var(--blue);color:#fff;padding:2px 10px;border-radius:12px;font-weight:700;font-size:.83rem}
+.grade-badge.g-12{background:#15803d}.grade-badge.g-10{background:#16a34a}
+.grade-badge.g-7{background:#2563eb}.grade-badge.g-4{background:#7c3aed}
+.grade-badge.g-02{background:#d97706}.grade-badge.g-00{background:#dc2626}
+.btn-danger{background:#fff;color:var(--red);border:1px solid var(--red);padding:6px 13px;border-radius:6px;cursor:pointer;font-size:.8rem}
+.btn-danger:hover{background:var(--red-bg)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div>
+    <div class="logo">FP9 Matematik</div>
+    <div class="subtitle">Online Øvelsestest</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="nav-btn" onclick="showPage('home')">🏠 Forside</button>
+  <button class="nav-btn" onclick="showPage('history')">📊 Resultater</button>
+</header>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="home-hero">
+    <h1>FP9 Matematik – Online Test</h1>
+    <p>10 øvelsessæt med 51 spørgsmål fordelt på tal og algebra, geometri og statistik. Du har 60 minutter pr. test.</p>
+  </div>
+  <div class="home-content">
+    <div class="info-box">
+      <h3>ℹ️ Sådan virker det</h3>
+      <p>Vælg et testsæt, skriv dit navn og tryk Start. Svar på alle spørgsmål inden for 60 minutter — testen afleveres automatisk når tiden er gået. Du får straks din karakter og en gennemgang af alle svar.</p>
+    </div>
+    <p class="section-title">Vælg et testsæt</p>
+    <div class="test-grid" id="test-grid"></div>
+    <div class="two-col">
+      <div class="info-box" style="margin-bottom:0">
+        <h3>📋 Om testene</h3>
+        <ul>
+          <li>51 spørgsmål pr. test</li>
+          <li>Tal og algebra (Opgave 1–10) · 27 spørgsmål</li>
+          <li>Geometri og måling (Opgave 11–17) · 16 spørgsmål</li>
+          <li>Statistik og sandsynlighed (Opgave 18–20) · 8 spørgsmål</li>
+          <li>60 minutters tidsbegrænsning</li>
+          <li>Automatisk bedømmelse og karakter</li>
+        </ul>
+      </div>
+      <div>
+        <p class="section-title" style="margin-bottom:10px">Karakterskala (7-trinsskalaen)</p>
+        <div class="scale-table">
+          <table>
+            <tr><th>% korrekte svar</th><th>Karakter</th></tr>
+            <tr><td>91–100 %</td><td><span class="grade-badge g-12">12</span></td></tr>
+            <tr><td>81–90 %</td><td><span class="grade-badge g-10">10</span></td></tr>
+            <tr><td>71–80 %</td><td><span class="grade-badge g-7">7</span></td></tr>
+            <tr><td>56–70 %</td><td><span class="grade-badge g-4">4</span></td></tr>
+            <tr><td>40–55 %</td><td><span class="grade-badge g-02">02</span></td></tr>
+            <tr><td>0–39 %</td><td><span class="grade-badge g-00">00</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEST PAGE -->
+<div id="page-test" class="page">
+  <div class="test-topbar">
+    <div class="test-info-header"><strong id="test-header-name"></strong><span id="test-header-student"></span></div>
+    <div class="test-progress-bar"><div class="test-progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <span id="progress-text" style="font-size:.78rem;color:var(--gray);white-space:nowrap"></span>
+    <div class="timer-box" id="timer-box">⏱ <span id="timer-display">60:00</span></div>
+    <button class="nav-btn" style="background:rgba(220,38,38,.18);border-color:rgba(220,38,38,.35);font-size:.78rem;padding:5px 11px" onclick="resetTest()">↺ Nulstil</button>
+  </div>
+  <div class="test-body" id="test-body"></div>
+  <div class="test-footer">
+    <div class="submit-section">
+      <div class="progress-text" id="submit-progress-text"></div>
+      <button class="btn-submit" onclick="submitTest()">Aflever test ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="page-results" class="page">
+  <div class="results-body">
+    <div class="results-hero">
+      <div class="hero-left">
+        <h2>Testresultat</h2>
+        <div class="student-name" id="result-student-name"></div>
+        <div class="test-name" id="result-test-name"></div>
+        <div style="font-size:.83rem;opacity:.8;margin-top:6px" id="result-date"></div>
+      </div>
+      <div class="grade-circle">
+        <div class="grade-val" id="result-grade"></div>
+        <div class="grade-label">Karakter</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card correct"><div class="val" id="stat-correct">-</div><div class="lbl">Rigtige svar</div></div>
+      <div class="stat-card wrong"><div class="val" id="stat-wrong">-</div><div class="lbl">Forkerte svar</div></div>
+      <div class="stat-card"><div class="val" id="stat-pct">-</div><div class="lbl">% korrekte</div></div>
+    </div>
+    <div class="results-actions">
+      <button class="btn-action primary" onclick="showPage('home')">← Vælg ny test</button>
+      <button class="btn-action" onclick="showPage('history')">📊 Alle resultater</button>
+      <button class="btn-action" id="retake-btn">🔄 Tag igen</button>
+    </div>
+    <div class="review-section">
+      <h3>Gennemgang af alle svar</h3>
+      <div id="review-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY PAGE -->
+<div id="page-history" class="page">
+  <div class="history-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+      <h2 style="font-size:1.35rem;color:var(--blue-dark)">📊 Alle testresultater</h2>
+      <button class="btn-danger" onclick="clearHistory()">Slet alle</button>
+    </div>
+    <div id="history-container"></div>
+  </div>
+</div>
+
+<!-- START MODAL -->
+<div class="modal-bg" id="start-modal">
+  <div class="modal">
+    <h2 id="modal-title">Test 01</h2>
+    <div class="modal-sub" id="modal-sub">51 spørgsmål · 60 minutter</div>
+    <label for="name-input">Dit navn</label>
+    <input type="text" id="name-input" placeholder="Skriv dit navn her…" autocomplete="off">
+    <div class="modal-info"><strong>Husk:</strong> Du må ikke bruge lommeregner under denne prøvedel.</div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeModal()">Annuller</button>
+      <button class="btn-primary" onclick="confirmStart()">Start test →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────
+const TESTS = {"1": [{"num": 1, "context": "En biograf har disse priser: Voksen: 110 kr. | Barn (under 12): 75 kr. | Popcorn (stor): 45 kr. Tirsdag-tilbud: 20 kr. rabat pa voksenbilletter.", "questions": [{"id": "1.1", "text": "Hvad koster 2 voksenbilletter og 1 stor popcorn tilsammen?", "answer": "265 kr.", "mc": false}, {"id": "1.2", "text": "Hvad koster en voksenbillet om tirsdagen?", "answer": "90 kr.", "mc": false}, {"id": "1.3", "text": "Hvor mange procent udgor tirsdagsrabatten af den normale voksenbilletpris?", "answer": "Ca. 18%", "mc": false}]}, {"num": 2, "context": "Opskrift pa pandekager til 4 personer: 3 aeg, 3 dL mel, 4 dL maelk, 1 spsk smor, 1 nip salt", "questions": [{"id": "2.1", "text": "Hvor mange dL mel skal man bruge til 8 personer?", "answer": "6 dL", "mc": false}, {"id": "2.2", "text": "Hvor mange dL maelk skal man bruge til 6 personer?", "answer": "6 dL", "mc": false}, {"id": "2.3", "text": "Hvor mange aeg skal man bruge til 10 personer?", "answer": "7,5 aeg", "mc": false}]}, {"num": 3, "context": "Et tog korer fra Aarhus til Kobenhavn, en strakning pa 300 km.", "questions": [{"id": "3.1", "text": "Hvad er togets gennemsnitshastighed i km/t, hvis turen tager 3 timer?", "answer": "100 km/t", "mc": false}, {"id": "3.2", "text": "En bus korer samme strakning med 75 km/t. Hvor lang tid tager turen i minutter?", "answer": "240 min.", "mc": false}]}, {"num": 4, "context": "I en kurv med 40 frugter er 3/8 abler.", "questions": [{"id": "4.1", "text": "Hvor mange abler er der?", "answer": "15", "mc": false}, {"id": "4.2", "text": "Hvor stor en brokdel er ikke abler?", "answer": "5/8", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "347 + 586", "answer": "933", "mc": false}, {"id": "5.2", "text": "1203 - 476", "answer": "727", "mc": false}, {"id": "5.3", "text": "8 * 324", "answer": "2592", "mc": false}, {"id": "5.4", "text": "4536 / 6", "answer": "756", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "Kvadratroden af 64", "answer": "8", "mc": false}, {"id": "6.2", "text": "(-3)^2 + 2^3", "answer": "17", "mc": false}, {"id": "6.3", "text": "5 + 2 * 6 - 3", "answer": "14", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "5x + 3 = 28", "answer": "x = 5", "mc": false}, {"id": "7.2", "text": "3x - 4 = 2x + 7", "answer": "x = 11", "mc": false}, {"id": "7.3", "text": "2(x + 4) = 3x - 1", "answer": "x = 9", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok, der er storre end 2/5 og mindre end 1/2.", "answer": "Fx 9/20", "mc": false}, {"id": "8.2", "text": "Skriv det decimaltal, der er 3 gange sa stort som 0,34.", "answer": "1,02", "mc": false}, {"id": "8.3", "text": "Skriv 15% som decimaltal.", "answer": "0,15", "mc": false}, {"id": "8.4", "text": "Skriv 3/4 som decimaltal.", "answer": "0,75", "mc": false}]}, {"num": 9, "context": "En ret linje p skaerer y-aksen i (0, -2) og har haeldning 3.", "questions": [{"id": "9.1", "text": "Hvilken ligning beskriver linjen p? A) y = 3x + 2 B) y = -2x + 3 C) y = 3x - 2 D) y = -3x - 2", "answer": "C) y = 3x - 2", "mc": true}]}, {"num": 10, "context": "En rektangel har laengden (2a + b) og bredden a.", "questions": [{"id": "10.1", "text": "Hvad er omkredsen? (Udtryk svaret ved a og b.)", "answer": "6a + 2b", "mc": false}, {"id": "10.2", "text": "Hvad er arealet? (Udtryk svaret ved a og b.)", "answer": "2a^2 + ab", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 2.5 km til m", "answer": "2500 m", "mc": false}, {"id": "11.2", "text": "Omskriv 4500 mL til L", "answer": "4,5 L", "mc": false}, {"id": "11.3", "text": "Omskriv 720000 g til kg", "answer": "720 kg", "mc": false}]}, {"num": 12, "context": "To ligedannede trekanter ABC og DEF. Sidelængdeforholdet DEF:ABC er 1:3. Siden AB er 9 cm.", "questions": [{"id": "12.1", "text": "Hvad er forholdet mellem de to trekants arealer (lille:store)?", "answer": "1:9", "mc": false}, {"id": "12.2", "text": "Hvad er siden DE?", "answer": "3", "mc": false}]}, {"num": 13, "context": "To parallelle linjer skæres af en transversal. En af de dannede vinkler er 70°.", "questions": [{"id": "13.1", "text": "Hvad er vinklen v? (v er den alternerende vinkel med 70°)", "answer": "70 grader", "mc": false}, {"id": "13.2", "text": "Hvad er vinklen u? (u er topvinklen til 70°)", "answer": "70 grader", "mc": false}, {"id": "13.3", "text": "Hvad er vinklen w? (w er nabovinklen til 70°)", "answer": "110 grader", "mc": false}]}, {"num": 14, "context": "Figur A er et rektangel med mål 20 m × 13 m. Figur B er en trapez med parallelle sider 30 m og 10 m og højde 20 m.", "questions": [{"id": "14.1", "text": "Hvad er rektanglets omkreds?", "answer": "66 m", "mc": false}, {"id": "14.2", "text": "Hvad er trapezens areal? (A = ½ × (a + b) × h)", "answer": "400 m^2", "mc": false}]}, {"num": 15, "context": "En cylinder har radius 4 cm og højde 10 cm. (Brug π ≈ 3,14)", "questions": [{"id": "15.1", "text": "Hvad er cylinderens rumfang? (V = π × r² × h)", "answer": "Ca. 502,4 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er arealet af cylinderens cirkulære grundflade? (A = π × r²)", "answer": "Ca. 50,24 cm^2", "mc": false}]}, {"num": 16, "context": "Et rektangel har mål 9 cm × 4 cm. En trekant har grundlinje 6 cm og højde 4 cm.", "questions": [{"id": "16.1", "text": "Hvad er rektanglets areal?", "answer": "36 cm^2", "mc": false}, {"id": "16.2", "text": "Hvad er trekantens areal? (A = ½ × g × h)", "answer": "12 cm^2", "mc": false}, {"id": "16.3", "text": "Hvad er de to figurers samlede areal?", "answer": "48 cm^2", "mc": false}]}, {"num": 17, "context": "En ligebenet trekant har toppunktvinklen 50°.", "questions": [{"id": "17.1", "text": "Hvad er størrelsen af de to ens grundlinjevinkler?", "answer": "65 grader", "mc": false}]}, {"num": 18, "context": "Karakterer i matematik (30 elever): 02: 3, 4: 5, 7: 12, 10: 8, 12: 2 elever", "questions": [{"id": "18.1", "text": "Hvor mange elever fik karakteren 7 eller derover?", "answer": "22 elever", "mc": false}, {"id": "18.2", "text": "Hvad er det samlede antal elever?", "answer": "30 elever", "mc": false}]}, {"num": 19, "context": "Antal soeskende hos 10 elever: 0, 1, 1, 2, 2, 2, 3, 3, 4, 5", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "2", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "2", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "2,3", "mc": false}]}, {"num": 20, "context": "En terning med tallene 1-6 kastes en gang.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for at sla et 6-tal?", "answer": "1/6", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for at sla et lige tal?", "answer": "1/2", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for at sla et tal storre end 4?", "answer": "1/3", "mc": false}]}], "2": [{"num": 1, "context": "En sportsbutik: Lobesko: 699 kr. | Sportssokker: 49 kr. | Traeningstroje: 299 kr. Salg: 25% rabat pa lobesko.", "questions": [{"id": "1.1", "text": "Hvad koster et par lobesko og en traeningstroje tilsammen uden rabat?", "answer": "998 kr.", "mc": false}, {"id": "1.2", "text": "Hvad koster et par lobesko i salget?", "answer": "524,25 kr.", "mc": false}, {"id": "1.3", "text": "En kunde kober 2 par lobesko i salget og 3 par sokker. Hvad betaler kunden?", "answer": "1195,50 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa smoothie til 2 personer: 200 g jordbaer, 1 banan, 1,5 dL yoghurt, 1 spsk honning", "questions": [{"id": "2.1", "text": "Hvor mange gram jordbaer til 5 personer?", "answer": "500 g", "mc": false}, {"id": "2.2", "text": "Hvor mange bananer til 9 personer?", "answer": "4,5 bananer", "mc": false}, {"id": "2.3", "text": "Hvor mange dL yoghurt til 6 personer?", "answer": "4,5 dL", "mc": false}]}, {"num": 3, "context": "En svommer svommer 1500 m pa 30 minutter.", "questions": [{"id": "3.1", "text": "Hvad er gennemsnitsfarten i m/min.?", "answer": "50 m/min.", "mc": false}, {"id": "3.2", "text": "Hvor lang tid tager det at svomme 2000 m med samme fart?", "answer": "40 min.", "mc": false}]}, {"num": 4, "context": "I en klasse pa 28 elever er 3/7 piger.", "questions": [{"id": "4.1", "text": "Hvor mange piger er der?", "answer": "12 piger", "mc": false}, {"id": "4.2", "text": "Hvor mange drenge er der?", "answer": "16 drenge", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "824 + 349", "answer": "1173", "mc": false}, {"id": "5.2", "text": "2001 - 867", "answer": "1134", "mc": false}, {"id": "5.3", "text": "9 * 408", "answer": "3672", "mc": false}, {"id": "5.4", "text": "5880 / 7", "answer": "840", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "3^4", "answer": "81", "mc": false}, {"id": "6.2", "text": "(-5)^2 - 3^2", "answer": "16", "mc": false}, {"id": "6.3", "text": "12 - 2 * (3 + 1)", "answer": "4", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "3x + 7 = 22", "answer": "x = 5", "mc": false}, {"id": "7.2", "text": "8x - 5 = 5x + 10", "answer": "x = 5", "mc": false}, {"id": "7.3", "text": "4(2x - 3) = 20", "answer": "x = 4", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok, der er storre end 1/3 og mindre end 1/2.", "answer": "Fx 2/5", "mc": false}, {"id": "8.2", "text": "Skriv det decimaltal, der er halvt sa stort som 1,84.", "answer": "0,92", "mc": false}, {"id": "8.3", "text": "Skriv 6,5% som decimaltal.", "answer": "0,065", "mc": false}, {"id": "8.4", "text": "Skriv 7/8 som decimaltal.", "answer": "0,875", "mc": false}]}, {"num": 9, "context": "En ret linje q skaerer y-aksen i (0, 4) og x-aksen i (2, 0).", "questions": [{"id": "9.1", "text": "Hvad er haeldningen af linjen q? A) 2 B) -2 C) 1/2 D) -1/2", "answer": "B) -2", "mc": true}]}, {"num": 10, "context": "En trekant har grundlinjen 3b og hojden 2a.", "questions": [{"id": "10.1", "text": "Hvad er trekantens areal? (Udtryk ved a og b.)", "answer": "3ab", "mc": false}, {"id": "10.2", "text": "Hvad er omkredsen, hvis de tre sider er 3b, 2a og (3b + 2a)?", "answer": "6b + 4a", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 3.2 m til cm", "answer": "320 cm", "mc": false}, {"id": "11.2", "text": "Omskriv 5600 g til kg", "answer": "5,6 kg", "mc": false}, {"id": "11.3", "text": "Omskriv 2.5 timer til minutter", "answer": "150 min.", "mc": false}]}, {"num": 12, "context": "To ligedannede rektangler. Det store har grundlinje 8 cm. Sidelængdeforholdet (lille:store) er 1:3.", "questions": [{"id": "12.1", "text": "Hvad er det lille rektangels grundlinje? (Giv svaret med 2 decimaler)", "answer": "4 x 2,67 (ca.)", "mc": false}, {"id": "12.2", "text": "Hvad er forholdet mellem de to rektanglers arealer (store:lille)?", "answer": "9:1", "mc": false}]}, {"num": 13, "context": "En ligebenet trekant har toppunktvinklen 110°. En anden vinkel er 35°.", "questions": [{"id": "13.1", "text": "Hvad er toppunktvinklen i den ligebene trekant?", "answer": "35 grader", "mc": false}, {"id": "13.2", "text": "Hvad er supplementvinklen til 35°?", "answer": "145 grader", "mc": false}, {"id": "13.3", "text": "Hvad er den komplementære vinkel til 35°?", "answer": "55 grader", "mc": false}]}, {"num": 14, "context": "En rektangulær have er 50 m lang og 25 m bred.", "questions": [{"id": "14.1", "text": "Hvad er havens omkreds?", "answer": "150 m", "mc": false}, {"id": "14.2", "text": "Hvad er havens areal?", "answer": "1250 m^2", "mc": false}]}, {"num": 15, "context": "En rektangulær kasse (prisme) har mål 4 cm × 5 cm × 8 cm.", "questions": [{"id": "15.1", "text": "Hvad er kassens rumfang?", "answer": "160 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er kassens overfladeareal?", "answer": "184 cm^2", "mc": false}]}, {"num": 16, "context": "En cirkel har radius 5 cm. Et kvadrat har side 8 cm. (Brug π ≈ 3,14)", "questions": [{"id": "16.1", "text": "Hvad er cirklens areal? (A = π × r²)", "answer": "Ca. 78,5 cm^2", "mc": false}, {"id": "16.2", "text": "Hvad er kvadratets areal?", "answer": "64 cm^2", "mc": false}, {"id": "16.3", "text": "Hvilken figur har det største areal?", "answer": "Cirklen", "mc": false}]}, {"num": 17, "context": "En retvinklet trekant har kateterer 6 cm og 8 cm.", "questions": [{"id": "17.1", "text": "Hvad er hypotenusens længde? (Brug Pythagoras: a² + b² = c²)", "answer": "10 cm", "mc": false}]}, {"num": 18, "context": "Skarmtid (timer/dag), 25 elever: 1 time: 2, 2 timer: 5, 3 timer: 8, 4 timer: 6, 5 timer: 4", "questions": [{"id": "18.1", "text": "Hvor mange elever er der i alt?", "answer": "25 elever", "mc": false}, {"id": "18.2", "text": "Hvor mange elever har mere end 3 timers skarmtid?", "answer": "10 elever", "mc": false}]}, {"num": 19, "context": "Datasaet: 12, 15, 15, 17, 18, 20, 21, 21, 21, 25", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "21", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "19", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "18,5", "mc": false}]}, {"num": 20, "context": "En pose: 4 rode, 3 bla og 5 gronne kugler.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for at traekke en rod kugle?", "answer": "1/3", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for at traekke bla eller gron?", "answer": "2/3", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for IKKE at traekke gron?", "answer": "7/12", "mc": false}]}], "3": [{"num": 1, "context": "Et fitnesscenter: Basis: 199 kr./md. | Premium: 299 kr./md. Ny-kunde: Forste 2 maneder 50% rabat pa Premium.", "questions": [{"id": "1.1", "text": "Hvad koster et Basis-abonnement i 6 maneder?", "answer": "1194 kr.", "mc": false}, {"id": "1.2", "text": "Hvad koster Premium de forste 2 maneder med tilbud?", "answer": "299 kr. (2 x 149,50)", "mc": false}, {"id": "1.3", "text": "Hvad sparer man i alt pa ny-kunde-tilbuddet?", "answer": "299 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa chokoladekage til 8 personer: 250 g chokolade, 200 g smor, 4 aeg, 150 g sukker, 100 g mel", "questions": [{"id": "2.1", "text": "Hvor mange gram chokolade til 4 personer?", "answer": "125 g", "mc": false}, {"id": "2.2", "text": "Hvor mange gram sukker til 12 personer?", "answer": "225 g", "mc": false}, {"id": "2.3", "text": "Sofie vil lave 20 stykker (opskrift er til 8). Hvor mange gram smor?", "answer": "500 g", "mc": false}]}, {"num": 3, "context": "En bil korer 45 km pa 30 minutter.", "questions": [{"id": "3.1", "text": "Hvad er bilens gennemsnitshastighed i km/t?", "answer": "90 km/t", "mc": false}, {"id": "3.2", "text": "Hvor langt korer bilen pa 1 time og 20 minutter?", "answer": "120 km", "mc": false}]}, {"num": 4, "context": "En saek med 56 bolde. 5/8 er fodboldbolde.", "questions": [{"id": "4.1", "text": "Hvor mange fodboldbolde er der?", "answer": "35", "mc": false}, {"id": "4.2", "text": "Hvad er procentdelen af fodboldbolde?", "answer": "62,5%", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "1456 + 789", "answer": "2245", "mc": false}, {"id": "5.2", "text": "3002 - 1487", "answer": "1515", "mc": false}, {"id": "5.3", "text": "12 * 345", "answer": "4140", "mc": false}, {"id": "5.4", "text": "7224 / 9", "answer": "803", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "2^5", "answer": "32", "mc": false}, {"id": "6.2", "text": "(-6)^2 / (-3)", "answer": "-12", "mc": false}, {"id": "6.3", "text": "3 * (4 + 2) - 8", "answer": "10", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "7x - 4 = 31", "answer": "x = 5", "mc": false}, {"id": "7.2", "text": "5x + 9 = 2x + 24", "answer": "x = 5", "mc": false}, {"id": "7.3", "text": "3(x - 2) = 2(x + 5)", "answer": "x = 16", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok, der er storre end 3/8 og mindre end 1/2.", "answer": "Fx 7/16", "mc": false}, {"id": "8.2", "text": "Skriv det decimaltal, der er 4 gange sa stort som 0,25.", "answer": "1,00", "mc": false}, {"id": "8.3", "text": "Skriv 12,5% som decimaltal.", "answer": "0,125", "mc": false}, {"id": "8.4", "text": "Skriv 5/8 som decimaltal.", "answer": "0,625", "mc": false}]}, {"num": 9, "context": "En ret linje r har ligningen y = 2x - 3.", "questions": [{"id": "9.1", "text": "Hvilket punkt ligger pa linjen? A) (0, 3) B) (2, 2) C) (3, 3) D) (1, -1)", "answer": "C) (3, 3) og D) (1, -1) — korrekt: C og D. Enkeltvalg: C", "mc": true}]}, {"num": 10, "context": "Et rektangel har omkredsens 10a + 6b. Bredden er 2b.", "questions": [{"id": "10.1", "text": "Hvad er rektanglets laengde? (Udtryk ved a og b.)", "answer": "5a + b", "mc": false}, {"id": "10.2", "text": "Hvad er rektanglets areal? (Udtryk ved a og b.)", "answer": "10ab + 2b^2", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 4.5 km til m", "answer": "4500 m", "mc": false}, {"id": "11.2", "text": "Omskriv 38 cm til m", "answer": "0,38 m", "mc": false}, {"id": "11.3", "text": "Omskriv 1.25 timer til minutter", "answer": "75 min.", "mc": false}]}, {"num": 12, "context": "To ligedannede trekanter ABC og DEF med sidelængdeforholdet ABC:DEF = 2:5. ABC's grundlinje er 6 cm.", "questions": [{"id": "12.1", "text": "Hvad er DEF's grundlinje?", "answer": "15", "mc": false}, {"id": "12.2", "text": "Hvad er forholdet mellem de to trekants arealer (lille ABC : store DEF)?", "answer": "4:25", "mc": false}]}, {"num": 13, "context": "En ligebenet trapez har stumpvinklen 130° og de to spidse vinkler er ens.", "questions": [{"id": "13.1", "text": "Hvad er stumpvinklen i trapezen?", "answer": "130 grader", "mc": false}, {"id": "13.2", "text": "Hvad er de to spidse vinkler i trapezen? (skriv begge)", "answer": "50 grader (begge)", "mc": false}, {"id": "13.3", "text": "Hvad er summen af alle vinkler i en firkant?", "answer": "360 grader", "mc": false}]}, {"num": 14, "context": "Figur A er en trapez med parallelle sider 12 m og 5 m og højde 8 m. Figur B er et rektangel med sider 10 m og 8 m.", "questions": [{"id": "14.1", "text": "Hvad er trapezens areal? (A = ½ × (a + b) × h)", "answer": "68 m^2", "mc": false}, {"id": "14.2", "text": "Hvad er rektanglets omkreds?", "answer": "36 m", "mc": false}]}, {"num": 15, "context": "En kugle har radius 6 cm. (Brug π ≈ 3,14)", "questions": [{"id": "15.1", "text": "Hvad er kuglens rumfang? (V = 4/3 × π × r³)", "answer": "Ca. 904,3 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er kuglens overfladeareal? (O = 4 × π × r²)", "answer": "Ca. 452,2 cm^2", "mc": false}]}, {"num": 16, "context": "En retvinklet trekant har det ene kateter 5 cm og hypotenusen 13 cm.", "questions": [{"id": "16.1", "text": "Hvad er det andet kateter? (Brug Pythagoras: a² + b² = c²)", "answer": "12 cm", "mc": false}, {"id": "16.2", "text": "Hvad er trekantens areal? (A = ½ × a × b)", "answer": "30 cm^2", "mc": false}, {"id": "16.3", "text": "Hvad er trekantens omkreds?", "answer": "30 cm", "mc": false}]}, {"num": 17, "context": "En ligebenet retvinklet trekant har den rette vinkel (90°) som toppunktsvinkel.", "questions": [{"id": "17.1", "text": "Hvad er størrelsen af vinklen v (de to ens grundlinjevinkler)?", "answer": "v = 45 grader", "mc": false}]}, {"num": 18, "context": "Temperaturer (grader C) i 7 dage: 14, 17, 15, 22, 19, 16, 21", "questions": [{"id": "18.1", "text": "Hvad er den hojeste og laveste temperatur?", "answer": "Hojest: 22 C, lavest: 14 C", "mc": false}, {"id": "18.2", "text": "Hvad er variationsbredden?", "answer": "8 grader C", "mc": false}]}, {"num": 19, "context": "Datasaet (15 runder): 5, 5, 8, 10, 10, 10, 12, 15, 15, 18, 18, 20, 20, 20, 25", "questions": [{"id": "19.1", "text": "Hvad er typetallet (typetal)?", "answer": "10 og 20", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "15", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "13,4", "mc": false}]}, {"num": 20, "context": "Et kortspil med 52 kort (13 af hver kulor). Et kort traekkes tilfaeldigt.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for at traekke et hjerter?", "answer": "1/4", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for at traekke et es?", "answer": "1/13", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for at traekke et rodt kort?", "answer": "1/2", "mc": false}]}], "4": [{"num": 1, "context": "En dyrehandel: Guldfisk: 15 kr./stk. | Neontetra: 8 kr./stk. | Siamesisk kampfisk: 59 kr./stk. Weekend-tilbud: Kob 3 siamesiske kampfisk og fa 1 gratis.", "questions": [{"id": "1.1", "text": "Hvad koster 5 guldfisk og 4 neontetra tilsammen?", "answer": "107 kr.", "mc": false}, {"id": "1.2", "text": "Hvad betaler man for 4 siamesiske kampfisk i weekenden?", "answer": "177 kr.", "mc": false}, {"id": "1.3", "text": "Hvad er rabatten pa 4 siamesiske kampfisk med weekendtilbud?", "answer": "59 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa brod til 1 brod: 5 dL mel, 3 dL vand, 25 g gaer, 1 tsk salt, 2 spsk olie", "questions": [{"id": "2.1", "text": "Hvor mange dL mel til 3 brod?", "answer": "15 dL", "mc": false}, {"id": "2.2", "text": "Hvor mange gram gaer til 4 brod?", "answer": "100 g", "mc": false}, {"id": "2.3", "text": "Til hvor mange brod raekker 750 g gaer?", "answer": "30 brod", "mc": false}]}, {"num": 3, "context": "Et fly flyver 720 km pa 1 time og 30 minutter.", "questions": [{"id": "3.1", "text": "Hvad er flyets gennemsnitshastighed i km/t?", "answer": "480 km/t", "mc": false}, {"id": "3.2", "text": "Hvor lang tid tager det at flyve 1200 km? (Timer og minutter.)", "answer": "2 timer og 30 min.", "mc": false}]}, {"num": 4, "context": "En kurv med 48 tomater. 1/4 er cherrytomater.", "questions": [{"id": "4.1", "text": "Hvor mange cherrytomater er der?", "answer": "12", "mc": false}, {"id": "4.2", "text": "Hvad er forholdet: cherrytomater vs. ovrige tomater?", "answer": "1:3", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "2347 + 1856", "answer": "4203", "mc": false}, {"id": "5.2", "text": "5000 - 1234", "answer": "3766", "mc": false}, {"id": "5.3", "text": "14 * 27", "answer": "378", "mc": false}, {"id": "5.4", "text": "3528 / 12", "answer": "294", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "Kvadratroden af 144", "answer": "12", "mc": false}, {"id": "6.2", "text": "2^4 - (-3)^2", "answer": "7", "mc": false}, {"id": "6.3", "text": "4 * 5 + 6 / 2 - 1", "answer": "22", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "9x - 12 = 60", "answer": "x = 8", "mc": false}, {"id": "7.2", "text": "4x + 3 = 6x - 11", "answer": "x = 7", "mc": false}, {"id": "7.3", "text": "5(x + 2) = 3(x + 8)", "answer": "x = 7", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok, der er storre end 4/9 og mindre end 5/9.", "answer": "Fx 1/2", "mc": false}, {"id": "8.2", "text": "Skriv det decimaltal, der er 5 gange sa stort som 0,06.", "answer": "0,30", "mc": false}, {"id": "8.3", "text": "Skriv 37,5% som decimaltal.", "answer": "0,375", "mc": false}, {"id": "8.4", "text": "Skriv 9/20 som decimaltal.", "answer": "0,45", "mc": false}]}, {"num": 9, "context": "En ret linje s skaerer y-aksen i 3 og har haeldning -4.", "questions": [{"id": "9.1", "text": "Find y, nar x = 2. A) y = -5 B) y = 5 C) y = 11 D) y = -11", "answer": "A) y = -5", "mc": true}]}, {"num": 10, "context": "En trekant har siderne (a + b), 2a og 3b.", "questions": [{"id": "10.1", "text": "Hvad er trekantens omkredsens? (Udtryk ved a og b.)", "answer": "3a + 4b", "mc": false}, {"id": "10.2", "text": "Hvis a = 5 og b = 3, hvad er omkredsens?", "answer": "27", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 7.2 L til dL", "answer": "72 dL", "mc": false}, {"id": "11.2", "text": "Omskriv 450 dm til m", "answer": "45 m", "mc": false}, {"id": "11.3", "text": "Omskriv 90 minutter til timer", "answer": "1,5 timer", "mc": false}]}, {"num": 12, "context": "To ligedannede trekanter med sidelængdeforholdet stor:lille = 3:1. Den store trekants areal er 225 cm².", "questions": [{"id": "12.1", "text": "Hvad er forholdet mellem de to trekants arealer (stor:lille)?", "answer": "9:1", "mc": false}, {"id": "12.2", "text": "Hvad er den lille trekants areal?", "answer": "25 cm^2", "mc": false}]}, {"num": 13, "context": "En ligebenet trekant har toppunktvinklen 50°. En ekstern vinkel er 48°.", "questions": [{"id": "13.1", "text": "Hvad er trekantens grundlinjevinkel?", "answer": "65 grader", "mc": false}, {"id": "13.2", "text": "Hvad er supplementvinklen til 48°?", "answer": "132 grader", "mc": false}, {"id": "13.3", "text": "Hvad type trekant er det, hvis alle vinkler er under 90°? (skriv trekanttypen)", "answer": "Spidsvinklet", "mc": false}]}, {"num": 14, "context": "En L-formet mark. Ydre mål: 35 m × 25 m. Et hjørnestykke på 15 m × 15 m er fjernet.", "questions": [{"id": "14.1", "text": "Hvad er markens samlede omkreds?", "answer": "110 m", "mc": false}, {"id": "14.2", "text": "Hvad er markens areal?", "answer": "700 m^2", "mc": false}]}, {"num": 15, "context": "En rektangulær kasse har mål 4 cm × 6 cm × 4 cm.", "questions": [{"id": "15.1", "text": "Hvad er kassens rumfang?", "answer": "96 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er kassens overfladeareal?", "answer": "36 cm^2", "mc": false}]}, {"num": 16, "context": "En stor cirkel har radius 10 cm. En lille cirkel har radius 6 cm. (Brug π ≈ 3,14)", "questions": [{"id": "16.1", "text": "Hvad er den store cirkels areal? (A = π × r²)", "answer": "314 cm^2", "mc": false}, {"id": "16.2", "text": "Hvad er den lille cirkels areal?", "answer": "113,04 cm^2", "mc": false}, {"id": "16.3", "text": "Hvad er det resterende areal, når den lille cirkel fjernes fra den store?", "answer": "Ca. 200,96 cm^2", "mc": false}]}, {"num": 17, "context": "En trekant har vinklerne 90°, 25° og v. En vinkel er 90°.", "questions": [{"id": "17.1", "text": "Hvad type trekant er det, når en af vinklerne er nøjagtig 90°?", "answer": "Retvinklet", "mc": false}]}, {"num": 18, "context": "Antal mal scoret pr. kamp (14 kampe): 0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 6", "questions": [{"id": "18.1", "text": "Hvad er det samlede antal mal?", "answer": "39 mal", "mc": false}, {"id": "18.2", "text": "Hvad er gennemsnittet af mal pr. kamp?", "answer": "Ca. 2,8 mal", "mc": false}]}, {"num": 19, "context": "Datasaet: 3, 7, 7, 9, 12, 14, 14, 14, 18, 22", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "14", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "13", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "12", "mc": false}]}, {"num": 20, "context": "En pose: 3 hvide, 5 sorte og 2 gule kugler. En kugle traekkes tilfaeldigt.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for hvid?", "answer": "3/10", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for sort eller gul?", "answer": "7/10", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for gron?", "answer": "0", "mc": false}]}], "5": [{"num": 1, "context": "En cafe: Kaffe: 35 kr. | Sandwich: 55 kr. | Kage: 45 kr. Studierabat: 10% pa alt.", "questions": [{"id": "1.1", "text": "Hvad koster 2 kaffe og 1 kage tilsammen?", "answer": "115 kr.", "mc": false}, {"id": "1.2", "text": "Hvad betaler en studerende for en sandwich med rabat?", "answer": "49,50 kr.", "mc": false}, {"id": "1.3", "text": "Hvad sparer en studerende ved at kobe kaffe og kage?", "answer": "8 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa morbradsgryde til 6 pers.: 800 g kod, 4 gulerotter, 2 dL flode, 1 log", "questions": [{"id": "2.1", "text": "Hvor mange gram kod til 9 personer?", "answer": "1200 g", "mc": false}, {"id": "2.2", "text": "Hvor mange gulerotter til 15 personer?", "answer": "10 gulerotter", "mc": false}, {"id": "2.3", "text": "Hvor mange dL flode til 2 personer?", "answer": "Ca. 0,67 dL", "mc": false}]}, {"num": 3, "context": "En cyklist korer 180 km pa 90 minutter.", "questions": [{"id": "3.1", "text": "Hvad er gennemsnitshastigheden i km/t?", "answer": "120 km/t", "mc": false}, {"id": "3.2", "text": "En lobers hastighed er 100 m/min. Hvad er det i km/t?", "answer": "6 km/t", "mc": false}]}, {"num": 4, "context": "En pose med 60 bolsjer. 4/5 er jordbrar.", "questions": [{"id": "4.1", "text": "Hvor mange jordbrarbolsjer er der?", "answer": "48", "mc": false}, {"id": "4.2", "text": "Hvor mange er ikke jordbrar?", "answer": "12", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "1673 + 1518", "answer": "3191", "mc": false}, {"id": "5.2", "text": "3240 - 1987", "answer": "1253", "mc": false}, {"id": "5.3", "text": "15 * 86", "answer": "1290", "mc": false}, {"id": "5.4", "text": "8640 / 12", "answer": "720", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "4^3", "answer": "64", "mc": false}, {"id": "6.2", "text": "(-2)^3 + 5^2", "answer": "17", "mc": false}, {"id": "6.3", "text": "(8 - 3) * 2 + 1", "answer": "11", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "6x + 5 = 41", "answer": "x = 6", "mc": false}, {"id": "7.2", "text": "9x - 2 = 5x + 18", "answer": "x = 5", "mc": false}, {"id": "7.3", "text": "2(3x - 1) = 4(x + 3)", "answer": "x = 7", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok storre end 1/3 og mindre end 2/5.", "answer": "Fx 7/24", "mc": false}, {"id": "8.2", "text": "Skriv det tredobbelte af 0,13 som decimaltal.", "answer": "0,39", "mc": false}, {"id": "8.3", "text": "Skriv 22% som decimaltal.", "answer": "0,22", "mc": false}, {"id": "8.4", "text": "Skriv 3/8 som decimaltal.", "answer": "0,375", "mc": false}]}, {"num": 9, "context": "En linje skaerer y-aksen i -1 og har haeldning 4.", "questions": [{"id": "9.1", "text": "Hvilken ligning beskriver linjen? A) y = -x + 4 B) y = 4x + 1 C) y = 4x - 1 D) y = -4x - 1", "answer": "C) y = 4x - 1", "mc": true}]}, {"num": 10, "context": "Et rektangel har laengde (3a + 2b) og bredde a.", "questions": [{"id": "10.1", "text": "Hvad er omkredsens? (Udtryk ved a og b.)", "answer": "8a + 4b", "mc": false}, {"id": "10.2", "text": "Hvad er arealet? (Udtryk ved a og b.)", "answer": "3a^2 + 2ab", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 5.6 km til m", "answer": "5600 m", "mc": false}, {"id": "11.2", "text": "Omskriv 2500 mL til L", "answer": "2,5 L", "mc": false}, {"id": "11.3", "text": "Omskriv 1.75 t til kg", "answer": "1750 kg", "mc": false}]}, {"num": 12, "context": "To ligedannede trekanter. Sidelængdeforholdet (lille:store) er 2:3. Den lille trekants grundlinje er 8 cm.", "questions": [{"id": "12.1", "text": "Hvad er den store trekants grundlinje?", "answer": "12", "mc": false}, {"id": "12.2", "text": "Hvad er forholdet mellem de to trekants arealer (lille:store)?", "answer": "4:9", "mc": false}]}, {"num": 13, "context": "En trekant har vinklerne 55°, 70° og 55°. En ekstern vinkel er 55°.", "questions": [{"id": "13.1", "text": "Hvad er trekantens mindste vinkel?", "answer": "55 grader", "mc": false}, {"id": "13.2", "text": "Hvad er supplementvinklen til 55°?", "answer": "125 grader", "mc": false}, {"id": "13.3", "text": "Hvad type trekant er det, når alle vinkler er under 90°? (skriv trekanttypen)", "answer": "Spidsvinklet", "mc": false}]}, {"num": 14, "context": "En L-formet legeplads. Ydre mål: 40 m × 22 m. Et hjørnestykke på 12 m × 10 m er fjernet.", "questions": [{"id": "14.1", "text": "Hvad er legepladsens samlede omkreds?", "answer": "116 m", "mc": false}, {"id": "14.2", "text": "Hvad er legepladsens areal?", "answer": "720 m^2", "mc": false}]}, {"num": 15, "context": "En rektangulær kasse (prisme) har mål 5 cm × 6 cm × 10 cm.", "questions": [{"id": "15.1", "text": "Hvad er kassens rumfang?", "answer": "300 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er kassens overfladeareal?", "answer": "280 cm^2", "mc": false}]}, {"num": 16, "context": "En cirkel har radius 7 cm. (Brug π ≈ 3,14)", "questions": [{"id": "16.1", "text": "Hvad er cirklens areal? (A = π × r²)", "answer": "Ca. 153,86 cm^2", "mc": false}, {"id": "16.2", "text": "Hvad er cirklens omkreds? (O = 2 × π × r)", "answer": "Ca. 43,96 cm", "mc": false}, {"id": "16.3", "text": "Hvad er cirklens diameter?", "answer": "14 cm", "mc": false}]}, {"num": 17, "context": "En ligesidet trekant har alle sider ens og alle vinkler ens.", "questions": [{"id": "17.1", "text": "Hvad er størrelsen af hver vinkel i en ligesidet trekant?", "answer": "60 grader", "mc": false}]}, {"num": 18, "context": "7-klassers matematik-point: 2: 4 elever, 4: 7 elever, 6: 9 elever, 8: 6 elever, 10: 4 elever", "questions": [{"id": "18.1", "text": "Hvad er det samlede antal elever?", "answer": "30 elever", "mc": false}, {"id": "18.2", "text": "Hvad er den hyppigste point-vaerdi?", "answer": "6", "mc": false}]}, {"num": 19, "context": "Datasaet: 4, 6, 6, 8, 9, 10, 10, 10, 13, 14", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "10", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "9,5", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "9", "mc": false}]}, {"num": 20, "context": "En pose: 6 rode, 4 bla, 2 hvide kugler. En traekkes tilfaeldigt.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for rod?", "answer": "1/2", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for bla?", "answer": "1/3", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for IKKE hvid?", "answer": "5/6", "mc": false}]}], "6": [{"num": 1, "context": "En rejsebureau: All-inclusive Mallorca: 4995 kr./pers. | Kreta: 3895 kr. | Tyrkiet: 2995 kr. Rabat: Bestil inden 1. marts og spar 300 kr./pers.", "questions": [{"id": "1.1", "text": "Hvad koster 2 pladser til Kreta uden rabat?", "answer": "7790 kr.", "mc": false}, {"id": "1.2", "text": "Hvad koster 1 plads til Mallorca med tidlig-bestillingsrabat?", "answer": "4695 kr.", "mc": false}, {"id": "1.3", "text": "Hvor mange procent udgor rabatten af Tyrkiet-prisen?", "answer": "Ca. 10,0%", "mc": false}]}, {"num": 2, "context": "Opskrift pa 12 muffins: 200 g mel, 150 g sukker, 100 g smor, 2 aeg, 1 tsk bagepulver, 1 dL maelk", "questions": [{"id": "2.1", "text": "Hvor mange gram mel til 18 muffins?", "answer": "300 g", "mc": false}, {"id": "2.2", "text": "Hvor mange dL maelk til 30 muffins?", "answer": "2,5 dL", "mc": false}, {"id": "2.3", "text": "Lea vil lave 8 muffins. Hvor mange aeg skal hun bruge?", "answer": "Ca. 4/3 aeg (1 stort aeg)", "mc": false}]}, {"num": 3, "context": "Et skib sejler 90 somil pa 6 timer. (1 somil = 1,852 km)", "questions": [{"id": "3.1", "text": "Hvad er skibets gennemsnitshastighed i somil/t (knob)?", "answer": "15 knob", "mc": false}, {"id": "3.2", "text": "Hvad er skibets hastighed i km/t?", "answer": "Ca. 27,78 km/t", "mc": false}]}, {"num": 4, "context": "En biograf med 240 saeder. 5/6 er optaget.", "questions": [{"id": "4.1", "text": "Hvor mange saeder er optaget?", "answer": "200", "mc": false}, {"id": "4.2", "text": "Hvad er balaegningsprocenten?", "answer": "Ca. 83,3%", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "3072 + 1948", "answer": "5020", "mc": false}, {"id": "5.2", "text": "4050 - 2367", "answer": "1683", "mc": false}, {"id": "5.3", "text": "23 * 47", "answer": "1081", "mc": false}, {"id": "5.4", "text": "9720 / 15", "answer": "648", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "5^2", "answer": "25", "mc": false}, {"id": "6.2", "text": "(-7)^2 - 4^3", "answer": "-15", "mc": false}, {"id": "6.3", "text": "(9 + 3) / 4 * 2", "answer": "6", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "11x - 7 = 48", "answer": "x = 5", "mc": false}, {"id": "7.2", "text": "7x + 4 = 4x + 22", "answer": "x = 6", "mc": false}, {"id": "7.3", "text": "3(2x + 5) = 5(x + 4)", "answer": "x = 5", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok storre end 5/12 og mindre end 1/2.", "answer": "Fx 11/24", "mc": false}, {"id": "8.2", "text": "Skriv 6 gange 0,15 som decimaltal.", "answer": "0,90", "mc": false}, {"id": "8.3", "text": "Skriv 0,4% som decimaltal.", "answer": "0,004", "mc": false}, {"id": "8.4", "text": "Skriv 11/20 som decimaltal.", "answer": "0,55", "mc": false}]}, {"num": 9, "context": "En linje t har ligningen y = -3x + 6.", "questions": [{"id": "9.1", "text": "Hvilket punkt ligger PA linjen t? A) (1, 2) B) (2, 0) C) (0, -3) D) (3, 5)", "answer": "B) (2, 0)", "mc": true}]}, {"num": 10, "context": "Et kvadrat har sidelangden (2a + 3).", "questions": [{"id": "10.1", "text": "Hvad er kvadratets omkredsens?", "answer": "8a + 12", "mc": false}, {"id": "10.2", "text": "Hvad er kvadratets areal?", "answer": "4a^2 + 12a + 9", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 8900 m til km", "answer": "8,9 km", "mc": false}, {"id": "11.2", "text": "Omskriv 2.3 kg til g", "answer": "2300 g", "mc": false}, {"id": "11.3", "text": "Omskriv 135 minutter til timer og minutter", "answer": "2 timer og 15 min.", "mc": false}]}, {"num": 12, "context": "To ligedannede kvadrater med sidelængdeforholdet (lille:store) = 1:4. Det lille kvadrats side er 3 cm.", "questions": [{"id": "12.1", "text": "Hvad er forholdet mellem de to kvadraters arealer (lille:store)?", "answer": "1:16", "mc": false}, {"id": "12.2", "text": "Hvad er det store kvadrats areal?", "answer": "144 cm^2", "mc": false}]}, {"num": 13, "context": "To parallelle linjer skæres af en transversal, der danner en vinkel på 53°.", "questions": [{"id": "13.1", "text": "Hvad er den alternerende vinkel til 53°?", "answer": "53 grader", "mc": false}, {"id": "13.2", "text": "Hvad er supplementvinklen til 37°?", "answer": "143 grader", "mc": false}, {"id": "13.3", "text": "Hvad er topvinklen til 53°?", "answer": "53 grader", "mc": false}]}, {"num": 14, "context": "En cirkulær plæne har diameter 80 m. (Brug π ≈ 3,14)", "questions": [{"id": "14.1", "text": "Hvad er plænens areal? (A = π × r²)", "answer": "Ca. 5024 m^2", "mc": false}, {"id": "14.2", "text": "Hvad er plænens omkreds? (O = π × d)", "answer": "Ca. 251,2 m", "mc": false}]}, {"num": 15, "context": "En cylinder har radius 1 cm og højde 12 cm. (Brug π ≈ 3,14)", "questions": [{"id": "15.1", "text": "Hvad er cylinderens rumfang? (V = π × r² × h)", "answer": "Ca. 37,68 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er arealet af cylinderens cirkulære grundflade? (A = π × r²)", "answer": "Ca. 28,26 cm^2", "mc": false}]}, {"num": 16, "context": "Et rektangel har sider 9 cm og 20 cm.", "questions": [{"id": "16.1", "text": "Hvad er rektanglets omkreds?", "answer": "41 cm", "mc": false}, {"id": "16.2", "text": "Hvad er rektanglets areal?", "answer": "180 cm^2", "mc": false}, {"id": "16.3", "text": "Hvad er diagonalens længde? (Brug Pythagoras)", "answer": "90 cm", "mc": false}]}, {"num": 17, "context": "En trekant har to vinkler på 60° og en tredje vinkel v.", "questions": [{"id": "17.1", "text": "Hvad er størrelsen af vinklen v?", "answer": "60 grader (alle tre)", "mc": false}]}, {"num": 18, "context": "Antal boger laest i sommerferien (20 elever): 0: 3, 1: 5, 2: 6, 3: 4, 4: 2 elever", "questions": [{"id": "18.1", "text": "Hvad er det samlede antal boger laest?", "answer": "33 boger", "mc": false}, {"id": "18.2", "text": "Hvad er gennemsnittet af boger pr. elev?", "answer": "1,65", "mc": false}]}, {"num": 19, "context": "10 elevers hojde (cm): 155, 158, 160, 162, 165, 165, 168, 170, 172, 175", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "165 cm", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "165 cm", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "165 cm", "mc": false}]}, {"num": 20, "context": "En mont kastes to gange.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for krone to gange?", "answer": "1/4", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for plat mindst en gang?", "answer": "3/4", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for krone forst, derefter plat?", "answer": "1/4", "mc": false}]}], "7": [{"num": 1, "context": "En pizzarestaurant: Margherita: 89 kr. | Pepperoni: 109 kr. | Vegetar: 99 kr. Onsdags-tilbud: Kob 2 pizzaer og fa 20% rabat pa begge.", "questions": [{"id": "1.1", "text": "Hvad koster 1 Margherita og 1 Pepperoni uden tilbud?", "answer": "198 kr.", "mc": false}, {"id": "1.2", "text": "Hvad koster 2 Vegetar-pizzaer med onsdagstilbud?", "answer": "158,40 kr.", "mc": false}, {"id": "1.3", "text": "Hvor mange kr. sparer man pa 2 Pepperoni-pizzaer med tilbud?", "answer": "43,60 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa hummus til 4 pers.: 400 g kikarter, 2 spsk tahini, 3 spsk citronsaft, 1 fed hvidslog, 2 spsk olivenolie", "questions": [{"id": "2.1", "text": "Hvor mange gram kikarter til 10 pers.?", "answer": "1000 g", "mc": false}, {"id": "2.2", "text": "Hvor mange spsk citronsaft til 6 pers.?", "answer": "4,5 spsk", "mc": false}, {"id": "2.3", "text": "Til hvor mange pers. raekker 5 spsk tahini?", "answer": "10 pers.", "mc": false}]}, {"num": 3, "context": "En jogger loeber 8 km pa 40 minutter.", "questions": [{"id": "3.1", "text": "Hvad er joggerens gennemsnitshastighed i km/t?", "answer": "12 km/t", "mc": false}, {"id": "3.2", "text": "Hvor lang tid tager det joggeren at lobe 10 km med samme fart?", "answer": "50 min.", "mc": false}]}, {"num": 4, "context": "I en klasse pa 32 elever er 3/8 venstrehandede.", "questions": [{"id": "4.1", "text": "Hvor mange elever er venstrehandede?", "answer": "12", "mc": false}, {"id": "4.2", "text": "Hvad er procentdelen af hoejrehandede?", "answer": "62,5%", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "2589 + 1743", "answer": "4332", "mc": false}, {"id": "5.2", "text": "6000 - 2347", "answer": "3653", "mc": false}, {"id": "5.3", "text": "16 * 75", "answer": "1200", "mc": false}, {"id": "5.4", "text": "4680 / 13", "answer": "360", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "6^3", "answer": "216", "mc": false}, {"id": "6.2", "text": "(-4)^2 - (-2)^3", "answer": "24", "mc": false}, {"id": "6.3", "text": "2 + 5 * (3^2 - 4)", "answer": "27", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "8x + 3 = 67", "answer": "x = 8", "mc": false}, {"id": "7.2", "text": "6x - 7 = 2x + 9", "answer": "x = 4", "mc": false}, {"id": "7.3", "text": "5(x - 3) = 2(2x + 1)", "answer": "x = 17", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok storre end 2/7 og mindre end 1/3.", "answer": "Fx 5/18", "mc": false}, {"id": "8.2", "text": "Skriv det firedobbelte af 0,125 som decimaltal.", "answer": "0,5", "mc": false}, {"id": "8.3", "text": "Skriv 7,5% som decimaltal.", "answer": "0,075", "mc": false}, {"id": "8.4", "text": "Skriv 13/20 som decimaltal.", "answer": "0,65", "mc": false}]}, {"num": 9, "context": "En linje u skaerer x-aksen i (4, 0) og y-aksen i (0, 8).", "questions": [{"id": "9.1", "text": "Hvad er haeldningen af linjen u? A) 2 B) -2 C) 1/2 D) -1/2", "answer": "B) -2", "mc": true}]}, {"num": 10, "context": "En rombes (ligesidet parallelogram) har sidelangden (2a + b).", "questions": [{"id": "10.1", "text": "Hvad er rombens omkredsens?", "answer": "8a + 4b", "mc": false}, {"id": "10.2", "text": "Hvis a = 3 og b = 2, hvad er omkredsens da?", "answer": "32", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 12500 m til km", "answer": "12,5 km", "mc": false}, {"id": "11.2", "text": "Omskriv 3.6 L til cL", "answer": "360 cL", "mc": false}, {"id": "11.3", "text": "Omskriv 2880 minutter til timer", "answer": "48 timer", "mc": false}]}, {"num": 12, "context": "To ligedannede trekanter med sidelængdeforholdet (lille:store) = 3:5. Den lille trekants grundlinje er 9 cm.", "questions": [{"id": "12.1", "text": "Hvad er skaleringsfaktoren fra lille til store? (Skriv kun tallet)", "answer": "9", "mc": false}, {"id": "12.2", "text": "Hvad er forholdet mellem de to trekants arealer (lille:store)?", "answer": "9:25", "mc": false}]}, {"num": 13, "context": "En trekant har vinklerne 50°, 72° og 58°. En ekstern vinkel er 72°.", "questions": [{"id": "13.1", "text": "Hvad er trekantens mindste vinkel?", "answer": "50 grader", "mc": false}, {"id": "13.2", "text": "Hvad er supplementvinklen til 72°?", "answer": "108 grader", "mc": false}, {"id": "13.3", "text": "Hvad type trekant er det, når alle vinkler er under 90°? (skriv trekanttypen)", "answer": "Spidsvinklet", "mc": false}]}, {"num": 14, "context": "En L-formet parkeringsplads. Ydre mål: 45 m × 35 m. Et hjørnestykke på 15 m × 13 m er fjernet.", "questions": [{"id": "14.1", "text": "Hvad er parkeringspladsens samlede omkreds?", "answer": "118 m", "mc": false}, {"id": "14.2", "text": "Hvad er parkeringspladsens areal?", "answer": "1260 m^2", "mc": false}]}, {"num": 15, "context": "En rektangulær kasse har mål 4 cm × 7 cm × 9 cm.", "questions": [{"id": "15.1", "text": "Hvad er kassens rumfang?", "answer": "252 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er kassens overfladeareal?", "answer": "254 cm^2", "mc": false}]}, {"num": 16, "context": "En cirkel har radius 5 cm. (Brug π ≈ 3,14)", "questions": [{"id": "16.1", "text": "Hvad er cirklens areal? (A = π × r²)", "answer": "Ca. 78,5 cm^2", "mc": false}, {"id": "16.2", "text": "Hvad er cirklens omkreds? (O = 2 × π × r)", "answer": "Ca. 15,7 cm", "mc": false}, {"id": "16.3", "text": "Hvad er arealet af 4 sådanne cirkler?", "answer": "Ca. 314 cm^2", "mc": false}]}, {"num": 17, "context": "En retvinklet trekant har kateterer 5 cm og 12 cm.", "questions": [{"id": "17.1", "text": "Hvad er hypotenusens længde? (Brug Pythagoras: √(5² + 12²))", "answer": "13 cm", "mc": false}]}, {"num": 18, "context": "Antal solgte is pr. dag (10 dage): 23, 30, 28, 45, 52, 47, 38, 29, 34, 41", "questions": [{"id": "18.1", "text": "Hvad er variationsbredden?", "answer": "29", "mc": false}, {"id": "18.2", "text": "Hvad er middelvaerdien?", "answer": "36,7", "mc": false}]}, {"num": 19, "context": "Datasaet: 2, 4, 4, 5, 6, 7, 7, 7, 9, 10, 10, 10, 12", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "7 og 10", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "7", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "Ca. 7,2", "mc": false}]}, {"num": 20, "context": "Et lykkehjul med 8 lige store felter: 3 gule, 3 bla og 2 rode.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for gul?", "answer": "3/8", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for bla eller rod?", "answer": "5/8", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for gul to gange i traek?", "answer": "9/64", "mc": false}]}], "8": [{"num": 1, "context": "En elektriker sender en regning: Timelon: 450 kr./t | Materialekost: 650 kr. | Fragt: 75 kr. Kunde-rabat: 5% pa timelon.", "questions": [{"id": "1.1", "text": "Hvad koster 3 timer arbejde uden rabat tilsammen med materiale og fragt?", "answer": "2075 kr.", "mc": false}, {"id": "1.2", "text": "Hvad koster 3 timers arbejde med kunderabat?", "answer": "1282,50 kr.", "mc": false}, {"id": "1.3", "text": "Hvad er den samlede regning med rabat pa timelon?", "answer": "2007,50 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa tacos til 5 pers.: 500 g hakket kod, 1 pakke tacokrydderi, 10 tacosskaller, 200 g ost, 2 tomater", "questions": [{"id": "2.1", "text": "Hvor mange gram hakket kod til 15 pers.?", "answer": "1500 g", "mc": false}, {"id": "2.2", "text": "Hvor mange taco-skaller til 8 pers.?", "answer": "16 skaller", "mc": false}, {"id": "2.3", "text": "Til hvor mange pers. raekker 350 g ost?", "answer": "8,75 pers. (afrund til 8)", "mc": false}]}, {"num": 3, "context": "En kajak paddler 12 km pa 2 timer.", "questions": [{"id": "3.1", "text": "Hvad er kajakkerens gennemsnitshastighed i km/t?", "answer": "6 km/t", "mc": false}, {"id": "3.2", "text": "Hvor langt padler kajakkerens pa 45 minutter med samme fart?", "answer": "4,5 km", "mc": false}]}, {"num": 4, "context": "En bod har 72 lollipops. 2/9 er sure.", "questions": [{"id": "4.1", "text": "Hvor mange sure lollipops er der?", "answer": "16", "mc": false}, {"id": "4.2", "text": "Hvad er brøkdelen, der ikke er sure?", "answer": "7/9", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "4567 + 2345", "answer": "6912", "mc": false}, {"id": "5.2", "text": "7000 - 3456", "answer": "3544", "mc": false}, {"id": "5.3", "text": "18 * 54", "answer": "972", "mc": false}, {"id": "5.4", "text": "6552 / 8", "answer": "819", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "Kvadratroden af 225", "answer": "15", "mc": false}, {"id": "6.2", "text": "(-9)^2 - 7^2", "answer": "32", "mc": false}, {"id": "6.3", "text": "(6 + 4)^2 / 5", "answer": "20", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "12x - 15 = 57", "answer": "x = 6", "mc": false}, {"id": "7.2", "text": "9x + 8 = 6x + 23", "answer": "x = 5", "mc": false}, {"id": "7.3", "text": "4(x + 6) = 6(x - 2)", "answer": "x = 18", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok storre end 3/11 og mindre end 4/11.", "answer": "Fx 7/22", "mc": false}, {"id": "8.2", "text": "Skriv det syvdobbelte af 0,04 som decimaltal.", "answer": "0,28", "mc": false}, {"id": "8.3", "text": "Skriv 0,08% som decimaltal.", "answer": "0,0008", "mc": false}, {"id": "8.4", "text": "Skriv 17/25 som decimaltal.", "answer": "0,68", "mc": false}]}, {"num": 9, "context": "En linje v har y-skaeringspunkt (0, -5) og haeldning 2.", "questions": [{"id": "9.1", "text": "Find x-skaeringspunktet (nar y = 0). A) x = 5 B) x = 2,5 C) x = -2,5 D) x = -5", "answer": "B) x = 2,5", "mc": true}]}, {"num": 10, "context": "Et trapez har de parallelle sider a og 3a samt hojden 2b.", "questions": [{"id": "10.1", "text": "Hvad er trapezets areal? (A = (a + 3a)/2 * hojde)", "answer": "4ab", "mc": false}, {"id": "10.2", "text": "Hvad er summen af de to parallelle sider?", "answer": "4a", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 4 m til cm", "answer": "400 cm", "mc": false}, {"id": "11.2", "text": "Omskriv 4,5 t til g", "answer": "4 500 000 g", "mc": false}, {"id": "11.3", "text": "Omskriv 3.75 timer til minutter", "answer": "225 min.", "mc": false}]}, {"num": 12, "context": "To ligedannede rektangler. Det lille har mål 4 cm × 6 cm. Sidelængdeforholdet er 2:7.", "questions": [{"id": "12.1", "text": "Hvad er det store rektangels mål? (Skriv som bredde × højde)", "answer": "14 x 21", "mc": false}, {"id": "12.2", "text": "Hvad er forholdet mellem de to rektanglers arealer (lille:store)?", "answer": "4:49", "mc": false}]}, {"num": 13, "context": "En trekant har vinklerne 28°, 118° og 34°. En ekstern vinkel er 28°.", "questions": [{"id": "13.1", "text": "Hvad er trekantens mindste spidse vinkel?", "answer": "28 grader", "mc": false}, {"id": "13.2", "text": "Hvad er trekantens stumpe vinkel?", "answer": "118 grader", "mc": false}, {"id": "13.3", "text": "Hvad type trekant er det, når en vinkel er over 90°? (skriv trekanttypen)", "answer": "Retvinklet", "mc": false}]}, {"num": 14, "context": "En mark er formet som en trapez med parallelle sider 18 m og 12 m og højde 9,33 m. Et rektangel ved siden er 8 m × 5,5 m.", "questions": [{"id": "14.1", "text": "Hvad er trapezens areal? (A = ½ × (a + b) × h, afrund til nærmeste hele m²)", "answer": "140 m^2", "mc": false}, {"id": "14.2", "text": "Hvad er rektanglets areal?", "answer": "44 m^2", "mc": false}]}, {"num": 15, "context": "En lille rektangulær kasse har bund 3 cm × 2 cm og højde 1 cm.", "questions": [{"id": "15.1", "text": "Hvad er den lille kasses grundareal?", "answer": "6 cm^2", "mc": false}, {"id": "15.2", "text": "Hvad er kassens rumfang, hvis højden er 10 cm (10 gange så høj)?", "answer": "60 cm^3", "mc": false}]}, {"num": 16, "context": "En retvinklet trekant har kateter a = 8 cm og kateter b.", "questions": [{"id": "16.1", "text": "Hvad er diagonalens længde? (hypotenuse, givet a = 8, b = 15 → brug Pythagoras)", "answer": "20 cm", "mc": false}, {"id": "16.2", "text": "Hvad er trekantens areal? (A = ½ × 8 × 15)", "answer": "10 cm", "mc": false}, {"id": "16.3", "text": "Hvad er figurens samlede omkreds (trekantens 3 sider), givet kateter 8, 15 og hypo 17?", "answer": "Ca. 314 cm^2", "mc": false}]}, {"num": 17, "context": "En retvinklet trekant har et kateter på 16 cm og hypotenusen er 20 cm.", "questions": [{"id": "17.1", "text": "Hvad er det andet kateter? (Brug Pythagoras: b = √(c² − a²))", "answer": "20 cm^2", "mc": false}]}, {"num": 18, "context": "Antal fejl pr. side i et manuskript (12 sider): 0, 0, 1, 1, 2, 2, 3, 3, 4, 5, 6, 8", "questions": [{"id": "18.1", "text": "Hvad er det samlede antal fejl?", "answer": "35 fejl", "mc": false}, {"id": "18.2", "text": "Hvad er gennemsnittet af fejl pr. side?", "answer": "Ca. 2,9", "mc": false}]}, {"num": 19, "context": "Datasaet: 8, 8, 9, 11, 13, 13, 15, 16, 17, 20", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "8 og 13", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "13", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "13", "mc": false}]}, {"num": 20, "context": "En kasse med 5 rod, 4 bla og 6 gron bolde. To traekkes (uden tilbagelaegning).", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for at traekke rod forst?", "answer": "5/15 = 1/3", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for gron pa det andet traek (givet forste var rod)?", "answer": "6/14 = 3/7", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for rod pa begge traek?", "answer": "5/15 * 4/14 = 2/21", "mc": false}]}], "9": [{"num": 1, "context": "En skifabrik: Slalom-ski: 2499 kr./par | Stave: 399 kr./par | Skihjelm: 799 kr. Medlem-rabat: 12% pa alt undtagen hjelme.", "questions": [{"id": "1.1", "text": "Hvad koster 1 par slalom-ski og 1 stave uden rabat?", "answer": "2898 kr.", "mc": false}, {"id": "1.2", "text": "Hvad koster 1 par slalom-ski med medlerabat?", "answer": "2199,12 kr.", "mc": false}, {"id": "1.3", "text": "Hvad koster en total outfit (ski + stave + hjelm) med rabat for et medel?", "answer": "3329,60 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa ostefondue til 6 pers.: 600 g ost, 3 dL hvidvin, 1 fed hvidslog, 1 spsk majsstivelse", "questions": [{"id": "2.1", "text": "Hvor mange gram ost til 10 pers.?", "answer": "1000 g", "mc": false}, {"id": "2.2", "text": "Hvor mange dL hvidvin til 9 pers.?", "answer": "4,5 dL", "mc": false}, {"id": "2.3", "text": "Til hvor mange pers. raekker 0,75 spsk majsstivelse?", "answer": "4,5 pers.", "mc": false}]}, {"num": 3, "context": "En vandscooter korer 45 km pa 30 minutter.", "questions": [{"id": "3.1", "text": "Hvad er gennemsnitshastigheden i km/t?", "answer": "90 km/t", "mc": false}, {"id": "3.2", "text": "Hvor lang tid tager det at kore 150 km med samme fart?", "answer": "100 min. (1 time og 40 min.)", "mc": false}]}, {"num": 4, "context": "En buket med 90 blomster. 7/9 er tulipaner.", "questions": [{"id": "4.1", "text": "Hvor mange tulipaner er der?", "answer": "70", "mc": false}, {"id": "4.2", "text": "Hvad er procentdelen af tulipaner?", "answer": "Ca. 77,8%", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "8934 + 1567", "answer": "10501", "mc": false}, {"id": "5.2", "text": "5432 - 2876", "answer": "2556", "mc": false}, {"id": "5.3", "text": "25 * 48", "answer": "1200", "mc": false}, {"id": "5.4", "text": "7560 / 14", "answer": "540", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "7^2", "answer": "49", "mc": false}, {"id": "6.2", "text": "(-3)^3 + 4^2", "answer": "(-27) + 16 = -11", "mc": false}, {"id": "6.3", "text": "3 * (5 + 4) - 2^3", "answer": "19", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "15x - 9 = 51", "answer": "x = 4", "mc": false}, {"id": "7.2", "text": "7x + 12 = 4x + 30", "answer": "x = 6", "mc": false}, {"id": "7.3", "text": "3(4x - 2) = 2(5x + 3)", "answer": "x = 3", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok storre end 5/9 og mindre end 2/3.", "answer": "Fx 11/18", "mc": false}, {"id": "8.2", "text": "Skriv det nidobbelte af 0,07 som decimaltal.", "answer": "0,63", "mc": false}, {"id": "8.3", "text": "Skriv 125% som decimaltal.", "answer": "1,25", "mc": false}, {"id": "8.4", "text": "Skriv 19/50 som decimaltal.", "answer": "0,38", "mc": false}]}, {"num": 9, "context": "En linje w har ligningen y = -(1/3)x + 4.", "questions": [{"id": "9.1", "text": "Hvilken vaerdi har y, nar x = 6? A) y = 2 B) y = -2 C) y = 6 D) y = 4", "answer": "A) y = 2", "mc": true}]}, {"num": 10, "context": "Et rektangel har laengde 5a og bredde (a + 2b).", "questions": [{"id": "10.1", "text": "Hvad er arealet? (Udtryk ved a og b.)", "answer": "5a^2 + 10ab", "mc": false}, {"id": "10.2", "text": "Hvad er omkredsens? (Udtryk ved a og b.)", "answer": "12a + 4b", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 345 dm til m", "answer": "34,5 m", "mc": false}, {"id": "11.2", "text": "Omskriv 5 dL til mL", "answer": "500 mL", "mc": false}, {"id": "11.3", "text": "Omskriv 5 uger til dage", "answer": "35 doge", "mc": false}]}, {"num": 12, "context": "To ligedannede firkanter med sidelængdeforholdet (lille:store) = 4:5. Den store firkants areal er 75 cm².", "questions": [{"id": "12.1", "text": "Hvad er forholdet mellem de to firkants arealer (lille:store)?", "answer": "16:25", "mc": false}, {"id": "12.2", "text": "Hvad er den store firkants areal?", "answer": "75 cm^2", "mc": false}]}, {"num": 13, "context": "En retvinklet ligebenet trekant. Vinklen a er en af de to ens spidse vinkler.", "questions": [{"id": "13.1", "text": "Hvad er vinklen a? (a = 45 grader)", "answer": "a = 45 grader", "mc": false}, {"id": "13.2", "text": "To parallelle linjer skæres af en transversal med 45°. Hvad er de fire vinkler? (skriv alle fire)", "answer": "45, 135, 45, 135 grader", "mc": false}, {"id": "13.3", "text": "Hvad er supplementvinklen til 135°?", "answer": "45 grader", "mc": false}]}, {"num": 14, "context": "En rektangulær mark er 1300 m lang og ½ km bred (= 500 m).", "questions": [{"id": "14.1", "text": "Hvad er markens samlede omkreds?", "answer": "1300 m", "mc": false}, {"id": "14.2", "text": "Hvad er markens areal i m²?", "answer": "150 000 m^2", "mc": false}]}, {"num": 15, "context": "En cylinder har radius 5 cm og højde 12 cm. (Brug π ≈ 3,14)", "questions": [{"id": "15.1", "text": "Hvad er cylinderens rumfang? (V = π × r² × h)", "answer": "Ca. 942 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er cylinderens samlede overfladeareal? (O = 2πr² + 2πrh)", "answer": "Ca. 533,8 cm^2", "mc": false}]}, {"num": 16, "context": "Et rektangel har mål 7 cm × 12 cm.", "questions": [{"id": "16.1", "text": "Hvad er rektanglets omkreds?", "answer": "24 cm", "mc": false}, {"id": "16.2", "text": "Hvad er rektanglets areal?", "answer": "84 cm^2", "mc": false}, {"id": "16.3", "text": "En trekant har hypotenuse 8,6 cm og kateter 7 cm. Hvad er det andet kateter? (Afrund til 1 decimal)", "answer": "56 cm", "mc": false}]}, {"num": 17, "context": "En ligebenet trekant har grundlinje 10 cm. De to ens sider er 7 cm. Grundlinjevinklerne er begge 72,5°.", "questions": [{"id": "17.1", "text": "Hvad er toppunktvinklen? (Afrund til nærmeste hele grad)", "answer": "35 grader", "mc": false}]}, {"num": 18, "context": "Antal sider lasst pr. dag (10 dage): 20, 35, 50, 45, 60, 55, 40, 30, 25, 65", "questions": [{"id": "18.1", "text": "Hvad er variationsbredden?", "answer": "45 sider", "mc": false}, {"id": "18.2", "text": "Hvad er middelvaerdien?", "answer": "42,5 sider", "mc": false}]}, {"num": 19, "context": "Datasaet (11 observationer): 3, 5, 5, 7, 8, 10, 10, 10, 12, 14, 16", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "10", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "10", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "Ca. 9,1", "mc": false}]}, {"num": 20, "context": "Et kortspil: 52 kort, 4 kulorer. En spiller traekker 1 kort.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for at fa et sort kort?", "answer": "1/2", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for at fa et billedkort (J, Q, K)? (Der er 12 billedkort.)", "answer": "12/52 = 3/13", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for IKKE at fa et as?", "answer": "48/52 = 12/13", "mc": false}]}], "10": [{"num": 1, "context": "En blomsterhandler: Roser: 25 kr./stk. | Tulipaner: 10 kr./stk. | Liljer: 35 kr./stk. Modersdags-tilbud: Kob for 200 kr. og fa 15% rabat pa hele kobet.", "questions": [{"id": "1.1", "text": "Hvad koster 6 roser, 4 tulipaner og 2 liljer uden tilbud?", "answer": "280 kr.", "mc": false}, {"id": "1.2", "text": "Kunden kober for 280 kr. Fa de rabat pa modersdagstilbuddet?", "answer": "Ja (280 > 200 kr.)", "mc": false}, {"id": "1.3", "text": "Hvad betaler kunden med rabatten?", "answer": "238 kr.", "mc": false}]}, {"num": 2, "context": "Opskrift pa risotto til 4 pers.: 300 g ris, 1 L bouillon, 1 log, 100 g parmesan, 2 spsk smor", "questions": [{"id": "2.1", "text": "Hvor mange gram ris til 6 pers.?", "answer": "450 g", "mc": false}, {"id": "2.2", "text": "Hvor mange L bouillon til 10 pers.?", "answer": "2,5 L", "mc": false}, {"id": "2.3", "text": "Til hvor mange pers. raekker 250 g parmesan?", "answer": "10 pers.", "mc": false}]}, {"num": 3, "context": "En vandmand svomme 300 m pa 5 minutter.", "questions": [{"id": "3.1", "text": "Hvad er vandmandens gennemsnitshastighed i m/min.?", "answer": "60 m/min.", "mc": false}, {"id": "3.2", "text": "Hvad er hastighed i km/t?", "answer": "3,6 km/t", "mc": false}]}, {"num": 4, "context": "En kasse med 120 pastiller. 5/6 er lakrids.", "questions": [{"id": "4.1", "text": "Hvor mange lakridspastiller er der?", "answer": "100", "mc": false}, {"id": "4.2", "text": "Hvor mange er ikke lakrids?", "answer": "20", "mc": false}]}, {"num": 5, "context": "Regn stykkerne.", "questions": [{"id": "5.1", "text": "6789 + 3421", "answer": "10210", "mc": false}, {"id": "5.2", "text": "9000 - 4567", "answer": "4433", "mc": false}, {"id": "5.3", "text": "34 * 29", "answer": "986", "mc": false}, {"id": "5.4", "text": "8820 / 21", "answer": "420", "mc": false}]}, {"num": 6, "context": "Regn stykkerne.", "questions": [{"id": "6.1", "text": "Kvadratroden af 400", "answer": "20", "mc": false}, {"id": "6.2", "text": "(-8)^2 - (-4)^3", "answer": "64 + 64 = 128", "mc": false}, {"id": "6.3", "text": "4 * (3^2 - 5) + 2", "answer": "18", "mc": false}]}, {"num": 7, "context": "Los ligningerne.", "questions": [{"id": "7.1", "text": "20x - 8 = 72", "answer": "x = 4", "mc": false}, {"id": "7.2", "text": "11x - 4 = 8x + 11", "answer": "x = 5", "mc": false}, {"id": "7.3", "text": "6(x - 1) = 4(x + 2)", "answer": "x = 7", "mc": false}]}, {"num": 8, "context": "Tal og repraesentationer.", "questions": [{"id": "8.1", "text": "Skriv en brok storre end 3/7 og mindre end 5/7.", "answer": "Fx 4/7", "mc": false}, {"id": "8.2", "text": "Skriv halvdelen af 0,96 som decimaltal.", "answer": "0,48", "mc": false}, {"id": "8.3", "text": "Skriv 250% som decimaltal.", "answer": "2,5", "mc": false}, {"id": "8.4", "text": "Skriv 23/25 som decimaltal.", "answer": "0,92", "mc": false}]}, {"num": 9, "context": "En linje x passerer gennem (0, 3) og (6, 0).", "questions": [{"id": "9.1", "text": "Hvad er haeldningen af linjen x? A) 1/2 B) -1/2 C) 2 D) -2", "answer": "B) -1/2", "mc": true}]}, {"num": 10, "context": "En cirkel med radius r. Omkredsens er 10*pi + 4*pi = 14*pi.", "questions": [{"id": "10.1", "text": "Hvad er radius r? (Omkredsens = 2*pi*r, og den er givet som 14*pi.)", "answer": "r = 7", "mc": false}, {"id": "10.2", "text": "Hvad er cirklens areal? (A = pi*r^2) Lad svaret indeholde pi.", "answer": "49*pi", "mc": false}]}, {"num": 11, "context": "Omskriv størrelserne.", "questions": [{"id": "11.1", "text": "Omskriv 280 cm til mm", "answer": "2800 mm", "mc": false}, {"id": "11.2", "text": "Omskriv 3.5 L til mL", "answer": "3500 mL", "mc": false}, {"id": "11.3", "text": "Omskriv 1 ar til m²", "answer": "100 m^2", "mc": false}]}, {"num": 12, "context": "To ligedannede trekanter med sidelængdeforholdet (lille:store) = 2:5. Den store trekants areal er 100 cm².", "questions": [{"id": "12.1", "text": "Hvad er forholdet mellem de to trekants arealer (lille:store)?", "answer": "4:25", "mc": false}, {"id": "12.2", "text": "Hvad er den store trekants areal?", "answer": "100 cm^2", "mc": false}]}, {"num": 13, "context": "En retvinklet trekant har vinklerne 90°, 60° og v.", "questions": [{"id": "13.1", "text": "Hvad er vinklen v?", "answer": "v = 30 grader", "mc": false}, {"id": "13.2", "text": "Hvad er alle tre vinkler i trekanten? (skriv alle tre)", "answer": "90, 60 og 30 grader", "mc": false}, {"id": "13.3", "text": "Hvad type trekant er det, når en vinkel er 90°? (skriv trekanttypen)", "answer": "Retvinklet", "mc": false}]}, {"num": 14, "context": "En kvadratisk grund har side 32 m. På grunden er en cirkulær dam med radius 9 m. (Brug π ≈ 3,14)", "questions": [{"id": "14.1", "text": "Hvad er grundens samlede areal?", "answer": "1056 m^2", "mc": false}, {"id": "14.2", "text": "Hvad er det resterende jordareals størrelse (grundareal minus dammen)?", "answer": "256 m^2", "mc": false}]}, {"num": 15, "context": "En cylinder har radius 6 cm og højde 8 cm. (Brug π ≈ 3,14)", "questions": [{"id": "15.1", "text": "Hvad er cylinderens rumfang? (V = π × r² × h)", "answer": "Ca. 301,44 cm^3", "mc": false}, {"id": "15.2", "text": "Hvad er arealet af cylinderens cirkulære grundflade? (A = π × r²)", "answer": "Ca. 113,04 cm^2", "mc": false}]}, {"num": 16, "context": "En ligebenet trekant har grundlinje 12 cm og de to ens sider 10 cm. Højden er 8 cm.", "questions": [{"id": "16.1", "text": "Hvad er trekantens omkreds?", "answer": "29 cm", "mc": false}, {"id": "16.2", "text": "Hvad er trekantens areal? (A = ½ × g × h)", "answer": "210 cm^2", "mc": false}, {"id": "16.3", "text": "Hvad er summen af de to ens sider?", "answer": "70 cm", "mc": false}]}, {"num": 17, "context": "En ligebenet trekant har to vinkler på 72° og toppunktvinklen v.", "questions": [{"id": "17.1", "text": "Hvad er vinklen v? Angiv også trekantens type.", "answer": "36 grader; ligebenet spidsvinklet trekant", "mc": false}]}, {"num": 18, "context": "Antal km cyklet pr. dag (10 dage): 5, 12, 8, 15, 20, 18, 10, 14, 9, 16", "questions": [{"id": "18.1", "text": "Hvad er variationsbredden?", "answer": "15 km", "mc": false}, {"id": "18.2", "text": "Hvad er middelvaerdien?", "answer": "12,7 km", "mc": false}]}, {"num": 19, "context": "Datasaet (12 elever, antal fravaerendedage): 0, 0, 1, 2, 2, 3, 3, 3, 5, 7, 9, 12", "questions": [{"id": "19.1", "text": "Hvad er typetallet?", "answer": "3", "mc": false}, {"id": "19.2", "text": "Hvad er medianen?", "answer": "3", "mc": false}, {"id": "19.3", "text": "Hvad er middelvaerdien?", "answer": "Ca. 3,9", "mc": false}]}, {"num": 20, "context": "Et lykkehjul med 12 lige store felter: 4 bla, 3 rode, 2 gule, 2 gronne og 1 sort.", "questions": [{"id": "20.1", "text": "Hvad er sandsynligheden for sort?", "answer": "1/12", "mc": false}, {"id": "20.2", "text": "Hvad er sandsynligheden for bla eller gron?", "answer": "6/12 = 1/2", "mc": false}, {"id": "20.3", "text": "Hvad er sandsynligheden for rod to gange i traek?", "answer": "9/144 = 1/16", "mc": false}]}]};
+
+// ── STATE ───────────────────────────────────────────────────────
+let S = { testNum:null, test:null, name:'', answers:{}, timerInterval:null, secondsLeft:3600, startTime:null, submitted:false };
+
+// ── NAVIGATION ──────────────────────────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='history') renderHistory();
+}
+
+// ── HOME ────────────────────────────────────────────────────────
+function buildHome(){
+  const g=document.getElementById('test-grid');
+  g.innerHTML='';
+  for(let n=1;n<=10;n++){
+    const best=getBest(n);
+    const d=document.createElement('div');
+    d.className='test-card';
+    d.innerHTML=`
+      <div class="test-num">${String(n).padStart(2,'0')}</div>
+      <div class="test-label">FP9 Matematik</div>
+      <div class="test-badge">51 spørgsmål · 60 min.</div>
+      ${best?`<div class="best-score">✓ Bedste: ${best.pct}% (Kar. ${best.grade})</div>`:'<div class="best-score" style="color:var(--gray)">Ikke gennemført endnu</div>'}
+      <button class="start-btn" onclick="openModal(${n})">Start test →</button>`;
+    g.appendChild(d);
+  }
+}
+function getBest(n){ const h=getHistory().filter(r=>r.testNum===n); return h.length?h.reduce((b,r)=>!b||r.pct>b.pct?r:b,null):null; }
+
+// ── MODAL ───────────────────────────────────────────────────────
+let pendingN=null;
+function openModal(n){
+  pendingN=n;
+  document.getElementById('modal-title').textContent=`Test ${String(n).padStart(2,'0')} – FP9 Matematik`;
+  document.getElementById('start-modal').classList.add('open');
+  document.getElementById('name-input').value='';
+  setTimeout(()=>document.getElementById('name-input').focus(),80);
+}
+function closeModal(){ document.getElementById('start-modal').classList.remove('open'); pendingN=null; }
+function confirmStart(){
+  const name=document.getElementById('name-input').value.trim();
+  if(!name){ document.getElementById('name-input').focus(); return; }
+  const n=pendingN; closeModal(); startTest(n,name);
+}
+document.getElementById('name-input').addEventListener('keydown',e=>{ if(e.key==='Enter') confirmStart(); });
+
+// ── START TEST ──────────────────────────────────────────────────
+function startTest(n, name){
+  if(S.timerInterval) clearInterval(S.timerInterval);
+  S.testNum=n; S.test=TESTS[n]; S.name=name; S.answers={};
+  S.secondsLeft=3600; S.startTime=new Date(); S.submitted=false;
+  renderTest(); showPage('test'); startTimer();
+}
+
+function resetTest(){
+  if(!confirm('Nulstil testen? Alle dine svar slettes og du starter forfra.')) return;
+  if(S.timerInterval) clearInterval(S.timerInterval);
+  S.answers={}; S.submitted=false;
+  S.secondsLeft=3600; S.startTime=new Date();
+  renderTest(); startTimer();
+}
+
+// ── RENDER TEST ─────────────────────────────────────────────────
+function sectionFor(num){ if(num<=10) return 'alg'; if(num<=17) return 'geo'; return 'stat'; }
+function sectionLabel(sec){ return {alg:'Tal og algebra',geo:'Geometri og måling',stat:'Statistik og sandsynlighed'}[sec]; }
+
+function parseMC(text){
+  const opts=[];
+  const re=/([A-D])\)\s*(.*?)(?=\s+[A-D]\)|$)/g; let m;
+  const clean=text.replace(/\s+/g,' ').trim();
+  while((m=re.exec(clean))!==null) opts.push({letter:m[1],text:m[2].trim()});
+  return opts;
+}
+function stemOf(text){ const i=text.search(/\s+A\)/); return i>0?text.substring(0,i).trim():text.trim(); }
+
+function renderTest(){
+  document.getElementById('test-header-name').textContent=`Test ${String(S.testNum).padStart(2,'0')}`;
+  document.getElementById('test-header-student').textContent=` · ${S.name}`;
+  const body=document.getElementById('test-body'); body.innerHTML='';
+  let lastSec='';
+
+  S.test.forEach(opgave=>{
+    const sec=sectionFor(opgave.num);
+    if(sec!==lastSec){
+      const banner=document.createElement('div');
+      banner.className=`section-banner ${sec}`;
+      banner.textContent=sectionLabel(sec);
+      body.appendChild(banner); lastSec=sec;
+    }
+    const block=document.createElement('div'); block.className='opgave-block';
+    block.innerHTML=`<div class="opgave-header">
+      <span class="opgave-num ${sec}">Opgave ${opgave.num}</span>
+      ${opgave.context?`<span class="opgave-context">${esc(opgave.context)}</span>`:''}
+    </div><div class="opgave-questions" id="ogq-${opgave.num}"></div>`;
+    body.appendChild(block);
+
+    const qc=document.getElementById(`ogq-${opgave.num}`);
+    opgave.questions.forEach(q=>{
+      const mc=parseMC(q.text);
+      const stem=mc.length>=2?stemOf(q.text):q.text;
+      const isFx=/^(fx|f\.eks\.)/i.test(q.answer);
+      let inputHTML='';
+      if(mc.length>=2){
+        inputHTML=`<div class="mc-options" id="mc-${q.id}">`+
+          mc.map(o=>`<label class="mc-option" id="mco-${q.id}-${o.letter}" onclick="selectMC('${q.id}','${o.letter}')">
+            <input type="radio" name="q-${q.id}" value="${o.letter}" onchange="onMC('${q.id}','${o.letter}')">
+            <span><strong>${o.letter})</strong> ${esc(o.text)}</span>
+          </label>`).join('')+'</div>';
+      } else {
+        inputHTML=`<input type="text" class="text-answer" id="inp-${q.id}"
+          placeholder="${isFx?'Skriv et eksempel…':'Dit svar…'}"
+          oninput="onText('${q.id}',this.value)" autocomplete="off">`;
+      }
+      const row=document.createElement('div'); row.className='question-row'; row.id=`qrow-${q.id}`;
+      row.innerHTML=`<div class="q-label">${esc(q.id)}</div>
+        <div class="q-content"><div class="q-text">${esc(stem)}</div>${inputHTML}</div>`;
+      qc.appendChild(row);
+    });
+  });
+  updateProgress();
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function onText(id,v){ S.answers[id]=v.trim(); const el=document.getElementById('inp-'+id); if(el) el.classList.toggle('answered',v.trim().length>0); updateProgress(); }
+function onMC(id,letter){ S.answers[id]=letter; updateProgress(); }
+function selectMC(id,letter){
+  document.querySelectorAll(`#mc-${id} .mc-option`).forEach(o=>o.classList.remove('selected'));
+  document.getElementById(`mco-${id}-${letter}`)?.classList.add('selected');
+}
+
+function getAllQids(){ if(!S.test) return []; return S.test.flatMap(og=>og.questions.map(q=>q.id)); }
+function getAllQuestions(){ if(!S.test) return []; return S.test.flatMap(og=>og.questions); }
+
+function updateProgress(){
+  const qids=getAllQids(), answered=qids.filter(id=>S.answers[id]&&S.answers[id].trim()).length, total=qids.length;
+  const pct=total?Math.round(answered/total*100):0;
+  const fill=document.getElementById('progress-fill'); if(fill) fill.style.width=pct+'%';
+  const pt=document.getElementById('progress-text'); if(pt) pt.textContent=`${answered}/${total}`;
+  const spt=document.getElementById('submit-progress-text');
+  if(spt) spt.innerHTML=`Du har besvaret <strong>${answered}</strong> ud af <strong>${total}</strong> spørgsmål.`;
+}
+
+// ── TIMER ───────────────────────────────────────────────────────
+function startTimer(){ updateTimer(); S.timerInterval=setInterval(()=>{ S.secondsLeft--; updateTimer(); if(S.secondsLeft<=0){ clearInterval(S.timerInterval); autoSubmit(); } },1000); }
+function updateTimer(){
+  const m=Math.floor(S.secondsLeft/60), s=S.secondsLeft%60;
+  const el=document.getElementById('timer-display'); if(el) el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const box=document.getElementById('timer-box'); if(box){ box.className='timer-box'; if(S.secondsLeft<=300&&S.secondsLeft>60) box.classList.add('warn'); else if(S.secondsLeft<=60) box.classList.add('danger'); }
+}
+function autoSubmit(){ if(!S.submitted){ alert('⏰ Tiden er udløbet! Din test afleveres automatisk.'); submitTest(); } }
+
+// ── ANSWER CHECK ────────────────────────────────────────────────
+function checkAnswer(si, ca){
+  if(!si||!si.trim()) return false;
+  si=si.trim(); ca=ca.trim();
+  if(/^(fx|f\.eks\.)/i.test(ca)) return si.length>0;
+
+  const norm=s=>{
+    let t=s.toLowerCase().trim();
+    t=t.replace(/\bca\.\s*/g,'');
+    t=t.replace(/\b(m\/min|km\/t|grader?|elever?|aeg|m\^2|m\^3|cm\^2|cm\^3|cm[²³]?|m[²³]?|dl|kr|min|km|kg|dage?)\b\.?/gi,'');
+    t=t.replace(/\^\d/g,'').replace(/,/g,'.').replace(/^[.,\s]+|[.,\s]+$/g,'');
+    return t.replace(/\s+/g,' ').trim();
+  };
+  const nsi=norm(si), nca=norm(ca);
+  if(nsi===nca) return true;
+
+  // MC
+  const mc=ca.match(/^([A-D])\)/i);
+  if(mc) return si.toUpperCase().replace(/[^A-D]/g,'').startsWith(mc[1].toUpperCase());
+
+  // Equation x=N
+  const eq=ca.match(/x\s*=\s*(-?[\d,./]+)/i);
+  if(eq){ const xca=parseFrac(eq[1].replace(',','.')); const sm=si.match(/=?\s*(-?[\d,./]+)/); if(sm){ const xsi=parseFrac(sm[1].replace(',','.')); if(xca!==null&&xsi!==null) return Math.abs(xca-xsi)<0.01; } }
+
+  // Ratio X:Y
+  if(/^\d+:\d+$/.test(nca)&&/^\d+:\d+$/.test(nsi)){ const [a1,b1]=nca.split(':').map(Number); const [a2,b2]=nsi.split(':').map(Number); return a1===a2&&b1===b2; }
+
+  // Fractions
+  const fca=parseFrac(nca), fsi=parseFrac(nsi);
+  if(fca!==null&&fsi!==null) return Math.abs(fca-fsi)<0.003;
+
+  // Numbers
+  const nca2=parseFloat(nca.replace(',','.')), nsi2=parseFloat(nsi.replace(',','.'));
+  if(!isNaN(nca2)&&!isNaN(nsi2)&&nca2!==0) return Math.abs(nca2-nsi2)/Math.abs(nca2)<0.022;
+  if(!isNaN(nca2)&&!isNaN(nsi2)&&nca2===0) return nsi2===0;
+
+  // Keyword match for text answers (Spidsvinklet, Retvinklet, Cirklen, etc.)
+  const kw=nca.replace(/[^a-zæøå]/gi,'').toLowerCase();
+  const kwsi=nsi.replace(/[^a-zæøå]/gi,'').toLowerCase();
+  if(kw.length>3) return kwsi.includes(kw)||kw.includes(kwsi);
+
+  const strip=s=>s.replace(/[^a-z0-9\/\.\+\-\*\^=(\)\[\]{}æøå]/g,'');
+  return strip(nsi)===strip(nca);
+}
+function parseFrac(s){ const m=String(s).match(/^(-?\d+)\s*\/\s*(\d+)$/); if(m) return parseInt(m[1])/parseInt(m[2]); const n=parseFloat(String(s).replace(',','.')); return isNaN(n)?null:n; }
+
+// ── SUBMIT ───────────────────────────────────────────────────────
+function submitTest(){
+  if(S.submitted) return; S.submitted=true;
+  if(S.timerInterval) clearInterval(S.timerInterval);
+  const questions=getAllQuestions(), total=questions.length;
+  let correct=0;
+  const graded=questions.map(q=>{ const sa=S.answers[q.id]||''; const ok=checkAnswer(sa,q.answer); if(ok) correct++; return {...q,studentAnswer:sa,correct:ok}; });
+  const pct=total?Math.round(correct/total*100):0;
+  const grade=calcGrade(pct);
+  const elapsed=Math.round((new Date()-S.startTime)/1000);
+  const result={testNum:S.testNum,studentName:S.name,date:new Date().toISOString(),total,correct,wrong:total-correct,pct,grade,elapsed,
+    answers:graded.map(g=>({id:g.id,sa:g.studentAnswer,ca:g.answer,ok:g.correct}))};
+  saveResult(result); renderResults(result,graded); showPage('results');
+}
+function calcGrade(p){ if(p>=91) return '12'; if(p>=81) return '10'; if(p>=71) return '7'; if(p>=56) return '4'; if(p>=40) return '02'; return '00'; }
+
+// ── RENDER RESULTS ───────────────────────────────────────────────
+function renderResults(result, graded){
+  document.getElementById('result-student-name').textContent=result.studentName;
+  document.getElementById('result-test-name').textContent=`FP9 Matematik – Test ${String(result.testNum).padStart(2,'0')}`;
+  document.getElementById('result-date').textContent=fmtDate(result.date)+` · Tid: ${fmtTime(result.elapsed)}`;
+  document.getElementById('result-grade').textContent=result.grade;
+  document.getElementById('stat-correct').textContent=`${result.correct}/${result.total}`;
+  document.getElementById('stat-wrong').textContent=result.wrong;
+  document.getElementById('stat-pct').textContent=result.pct+'%';
+  document.getElementById('retake-btn').onclick=()=>startTest(S.testNum,S.name);
+
+  const container=document.getElementById('review-container'); container.innerHTML='';
+  let lastSec='';
+  S.test.forEach(opgave=>{
+    const sec=sectionFor(opgave.num);
+    if(sec!==lastSec){
+      const sh=document.createElement('div'); sh.className=`review-section-header ${sec}`;
+      sh.textContent=sectionLabel(sec); container.appendChild(sh); lastSec=sec;
+    }
+    const div=document.createElement('div'); div.className='review-opgave';
+    div.innerHTML=`<div class="review-opgave-header ${sec}">Opgave ${opgave.num}${opgave.context?' – '+opgave.context.substring(0,55)+'…':''}</div>`;
+    opgave.questions.forEach(q=>{
+      const gq=graded.find(g=>g.id===q.id); if(!gq) return;
+      const row=document.createElement('div'); row.className='review-q '+(gq.correct?'correct':'wrong');
+      const sa=gq.studentAnswer||(gq.correct?'✓':'(intet svar)');
+      row.innerHTML=`<div class="review-q-num">${esc(q.id)}</div>
+        <div class="review-q-body">
+          <div class="q-text-small">${esc(stemOf(q.text))}</div>
+          <div class="answers-row">
+            <span class="student-ans">Svar: <em>${esc(sa)}</em></span>
+            <span class="separator">·</span>
+            <span class="correct-ans">Facit: ${esc(q.answer)}</span>
+          </div>
+        </div>
+        <div class="review-icon">${gq.correct?'✅':'❌'}</div>`;
+      div.appendChild(row);
+    });
+    container.appendChild(div);
+  });
+}
+
+// ── HISTORY ──────────────────────────────────────────────────────
+function getHistory(){ try{ return JSON.parse(localStorage.getItem('fp9_v2')||'[]'); } catch{ return []; } }
+function saveResult(r){ const h=getHistory(); h.unshift(r); localStorage.setItem('fp9_v2',JSON.stringify(h.slice(0,200))); buildHome(); }
+function clearHistory(){ if(confirm('Slet alle gemte resultater?')){ localStorage.removeItem('fp9_v2'); renderHistory(); buildHome(); } }
+function renderHistory(){
+  const h=getHistory(), c=document.getElementById('history-container');
+  if(!h.length){ c.innerHTML='<div class="history-empty"><p style="font-size:2rem">📊</p><p style="margin-top:8px">Ingen resultater endnu.</p></div>'; return; }
+  c.innerHTML=`<div class="history-table"><table>
+    <tr><th>Test</th><th>Navn</th><th>Dato</th><th>Score</th><th>%</th><th>Karakter</th><th>Tid</th></tr>
+    ${h.map(r=>`<tr>
+      <td>Test ${String(r.testNum).padStart(2,'0')}</td>
+      <td>${esc(r.studentName)}</td>
+      <td>${fmtDate(r.date)}</td>
+      <td>${r.correct}/${r.total}</td>
+      <td>${r.pct}%</td>
+      <td><span class="grade-badge g-${r.grade}">${r.grade}</span></td>
+      <td>${fmtTime(r.elapsed)}</td>
+    </tr>`).join('')}
+  </table></div>`;
+}
+
+// ── UTILS ────────────────────────────────────────────────────────
+function fmtDate(iso){ const d=new Date(iso); return d.toLocaleDateString('da-DK',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function fmtTime(s){ return `${Math.floor(s/60)}m ${String(s%60).padStart(2,'0')}s`; }
+
+// ── INIT ─────────────────────────────────────────────────────────
+buildHome();
+</script>
+</body>
+</html>
